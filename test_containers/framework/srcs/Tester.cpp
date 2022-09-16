@@ -1,5 +1,8 @@
 #include "../class/Tester.hpp"
 
+namespace MyContainerTester {
+	
+
 //					//
 //	Constructors	//
 //					//
@@ -120,4 +123,6 @@ int		Display(int status) {
 	}
 	std::cout << "\e[91m[KO]\e[39m" << std::endl;
 	return (-1);
+}
+
 }
