@@ -6,15 +6,19 @@ int	disp_coucou() {
 }
 
 int	main() {
-	Tester t("coucou", "coucou_0", &disp_coucou);
 	std::vector<Tester>	list;
 	
-	list.push_back(t);
-	Tester a("poil", "coucou_1", &disp_coucou);
-	list.push_back(a);
-	std::cout << list.at(0) << std::endl;
-	std::cout << list.at(1) << std::endl;
-	list.at(0).RunTest(list);
-	
+	try {
+		Tester t("p", "coucou_0", &disp_coucou);
+		list.push_back(t);
+		std::cout << list.at(0) << std::endl;
+		Tester a("p", "coucou_1", &disp_coucou);
+		list.push_back(a);
+		std::cout << list.at(1) << std::endl;
+		list.at(0).RunTest(list);
+	}
+	catch (const std::exception& e) {
+		std::cout << e.what() << std::endl;
+	}
 	return (0);
 }

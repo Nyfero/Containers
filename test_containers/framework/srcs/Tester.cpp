@@ -33,15 +33,15 @@ Tester::~Tester() {}
 //			//
 
 const char* Tester::InvalidTestException::what() const throw() {
-	return ("\e[91mError: Unable to create this test\e[39m\n");
+	return ("\e[91mError: Unable to create this test\e[39m");
 }
 
 const char* Tester::MissingTestException::what() const throw() {
-	return ("\e[91mError: No test provided\e[39m\n");
+	return ("\e[91mError: No test provided\e[39m");
 }
 
 const char* Tester::ChildAbortException::what() const throw() {
-	return ("\e[91mError: PID = -1\e[39m\n");
+	return ("\e[91mError: PID = -1\e[39m");
 }
 
 //				//
