@@ -8,26 +8,28 @@
 # include <vector>
 # include <list>
 # include <csignal>
+# include <sys/time.h>
+# include <sys/wait.h>
 
 class Tester
 {
 	private:
 		std::string	_funcName;
 		std::string	_nameTest;
-		int			(*_function)(void);
+		int			(*_funcPtr)(void);
 		
 	public:
 		//	Constructors
-		Tester(std::string func, std::string name, int (*function)(void));
+		Tester(std::string funcName, std::string name, int (*funcPtr)(void));
 		Tester(Tester const& src);
 		Tester & operator=(Tester const& src);
 		~Tester();
 		
 		//	Throw
-		class	InvalidTestException: public std::exception
+		class InvalidTestException: public std::exception
 		{
-			public:
-				virtual const char* what() const throw();
+		public:
+			virtual const char* what() const throw();
 		};
 		
 		class	MissingTestException: public std::exception
@@ -51,6 +53,6 @@ class Tester
 
 //	Display
 std::ostream & operator << (std::ostream &out, const Tester &src);
-std::string	Display_error(int status);
-std::string	Display(int status);
+int		Display_error(int status);
+int		Display(int status);
 #endif

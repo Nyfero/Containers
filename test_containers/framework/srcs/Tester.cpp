@@ -4,25 +4,24 @@
 //	Constructors	//
 //					//
 
-Tester::Tester(std::string func, std::string name, int (*function)(void)):
-_funcName(func), _nameTest(name), _function(function)
-{
-	if (!(_funcName && _nameTest && (*(_function))))
+Tester::Tester(std::string func, std::string name, int (*funcPtr)(void)):
+_funcName(func), _nameTest(name), _funcPtr(funcPtr) {
+	if (_funcName.empty() || _nameTest.empty() || (*_funcPtr) == NULL)
 		throw InvalidTestException();
 }
 
 Tester::Tester(Tester const& src):
-_funcName(src._funcName), _nameTest(src._nameTest), _function(src._function)
+_funcName(src._funcName), _nameTest(src._nameTest), _funcPtr(src._funcPtr)
 {
-	if (!(_funcName && _nameTest && (*(_function))))
+	if (_funcName.empty() || _nameTest.empty() || (*_funcPtr) == NULL)
 		throw InvalidTestException();
 }
 
 Tester & Tester::operator=(Tester const& src) {
 	this->_funcName = src._funcName;
 	this->_nameTest = src._nameTest;
-	this->_function = src._function;
-	if (!(_funcName && _nameTest && (*(_function))))
+	this->_funcPtr = src._funcPtr;
+	if (_funcName.empty() || _nameTest.empty() || (*_funcPtr) == NULL)
 		throw InvalidTestException();
 	return (*this);
 }
@@ -60,21 +59,21 @@ std::string Tester::GetNameTest() const {
 int	Tester::RunTest(std::vector<Tester> & test) {
 	int	pid = 0;
 	int	status = 0;
-	int	i = 0;
+	std::vector<int>::size_type i = 0;
 	int	res = 0;
-	
-	if (!test)
+
+	if (test.empty())
 		throw MissingTestException();
 	while (i < test.size())
 	{
 		pid = fork();
 		if (pid == -1)
 			throw ChildAbortException();
-		if (pid == 1)
+		if (pid != 0)
 			test.at(i).ExecTest();
 		else
 		{
-			wait(&status);
+			pid = wait(&status);
 			if (WIFSIGNALED(status))
 				res = Display_error(status); 
 			else
@@ -82,13 +81,13 @@ int	Tester::RunTest(std::vector<Tester> & test) {
 		}
 		i++;
 	}
-	
+	return (res);
 }
 
 void		Tester::ExecTest() {
 	int	res;
-	
-	res = this->_function;
+
+	res = this->_funcPtr();
 	if (res)
 		exit(EXIT_FAILURE);
 	exit(EXIT_SUCCESS);
@@ -102,7 +101,7 @@ std::ostream & operator << (std::ostream &out, const Tester &src) {
 	return (out << "Test: " << src.GetNameTest() << " from: " << src.GetFuncName());
 }
 
-std::string	Display_error(int status) {
+int		Display_error(int status) {
 	int	signal;
 
 	signal = WTERMSIG(status);
@@ -113,12 +112,12 @@ std::string	Display_error(int status) {
 	return (-1);
 }
 
-std::string	Display(int status) {
+int		Display(int status) {
 	if (!status)
+	{
 		std::cout << "\e[92m[OK]\e[39m" << std::endl;
-	else
-		std::cout << "\e[91m[KO]\e[39m" << std::endl;
-	if (status)
-		return (-1);
-	return (0);
+		return (0);
+	}
+	std::cout << "\e[91m[KO]\e[39m" << std::endl;
+	return (-1);
 }
