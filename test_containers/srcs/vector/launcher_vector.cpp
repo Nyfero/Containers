@@ -1,4 +1,4 @@
-#include "../class/Tester.hpp"
+#include "../../class/List.h"
 
 using namespace MyContainerTester;
 
@@ -7,7 +7,7 @@ int	disp_coucou() {
 	return (0);
 }
 
-int	main() {
+int	vector_launch() {
 	std::vector<Tester>	list;
 	
 	try {
@@ -22,5 +22,4 @@ int	main() {
 	catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
 	}
-	return (0);
 }

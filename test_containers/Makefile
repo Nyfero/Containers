@@ -23,11 +23,17 @@ CLASS_PATH = class
 CLASS = $(addprefix $(CLASS_PATH)/, Tester.hpp)
 
 #    Files
+TESTER_FILE = Tester.cpp
+
+VECTOR_FILES = launcher_vector.cpp
+
 SRCS_PATH = srcs
 
-FILES = main.cpp Tester.cpp
+VECTOR_PATH = $(SRCS_PATH)/vector
 
-SRCS = $(addprefix $(SRCS_PATH)/, $(FILES))
+SRCS = $(addprefix framework/, $(TESTER_FILE)) \
+	$(addprefix $(VECTOR_PATH)/, $(VECTOR_FILES)) \
+	main.cpp
 
 #    Compilation
 NAME = test_containers
@@ -38,27 +44,21 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98
 
 RM = rm -rf
 
-OBJS_PATH = objs/
-
-OBJS = $(patsubst $(SRCS_PATH)%.cpp,	$(OBJS_PATH)%.o,	$(SRCS))
+OBJS = $(SRCS:.cpp=.o)
 
 #    Rules
 all: $(NAME)
 
-$(NAME): $(OBJS_PATH) $(OBJS) $(CLASS)
-	@ echo "$(BLUE)\n         ***Make $(NAME) ***\n$(END)"
-	$(HIDE) $(CXX) $(CFLAGS) $(OBJS) -o $(NAME)
-	@ echo "$(GREEN)\n        ---$(NAME) created ---\n$(END)"
+.c.o:
+	$(HIDE) $(CXX) $(CFLAGS) $(INC) -c $< -o ${<:.c=.o}
 
-$(OBJS_PATH):
-	$(HIDE) mkdir -p $(OBJS_PATH)
-
-$(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp $(CLASS) Makefile
-	$(HIDE) $(CXX) $(CFLAGS) -c $< -o $@
-	@ echo "$(GREEN)[ OK ]$(END) $(CYAN)${<:.s=.o}$(END)"
+$(NAME): $(OBJS) $(INC)
+	@ echo "$(BLUE)\n		*** Make $(NAME) ***\n$(END)"
+	@ $(CXX) $(CFLAGS) $(OBJS) -o $(NAME)
+	@ echo "$(GREEN)\n		---$(NAME) created ---\n$(END)"
 
 clean:
-	$(HIDE) $(RM) $(OBJS_PATH)
+	$(HIDE) $(RM) $(OBJS)
 	@ echo "$(PURPLE)\n        *** Clean objects ***\n$(END)"
 
 fclean: clean
