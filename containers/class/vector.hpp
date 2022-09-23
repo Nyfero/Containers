@@ -13,18 +13,29 @@ namespace ft {
 	class vector
 	{
 		public:
-			// T										value_type;
-			// Allocator								allocator_type;
-			// std::size_t								size_type;
-			// std::ptrdiff_t							difference_type;
-			// value_type &							reference;
-			// const value_type &						const_reference;
-			// Allocator::pointer						pointer;
-			// Allocator::const_pointer				const_pointer;
-			// value_type								iterator;
-			// const value_type						const_iterator;
-			// std::reverse_iterator<iterator>			reverse_iterator;
-			// std::reverse_iterator<const_iterator>	reverse_const_iterator;
+			
+			/**********************************/
+			/*****      MEMBER TYPES      *****/
+			/**********************************/
+			
+			typedef T										value_type;
+			typedef Allocator								allocator_type;
+			
+			typedef value_type								iterator;
+			typedef const value_type						const_iterator;
+			
+			typedef std::reverse_iterator<iterator>			reverse_iterator;
+			typedef std::reverse_iterator<const_iterator>	reverse_const_iterator;
+			
+			typedef typename value_type &					reference;
+			typedef typename value_type &					const_reference;
+			
+			typedef typename Allocator::pointer				pointer;
+			typedef typename Allocator::const_pointer		const_pointer;
+			
+			typedef std::size_t								size_type;
+			typedef std::ptrdiff_t							difference_type;
+			
 		
 		public:
 			
@@ -327,8 +338,6 @@ namespace ft {
 			
 			iterator insert( const_iterator pos, size_type count, const T& value );
 			
-			constexpr iterator insert( const_iterator pos, size_type count, const T& value );
-			
 			template< class InputIt >
 			iterator insert( const_iterator pos, InputIt first, InputIt last );
 			
@@ -418,27 +427,27 @@ namespace ft {
 	
 	//	Operator==
 	template< class T, class Alloc >
-	bool operator==( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+	bool operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
 	
 	//	Operator!=
 	template< class T, class Alloc >
-	bool operator!=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+	bool operator!=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
 	
 	//	Operator<
 	template< class T, class Alloc >
-	bool operator<( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+	bool operator<( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
 	
 	//	Operator<=
 	template< class T, class Alloc >
-	bool operator<=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+	bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
 	
 	//	Operator>
 	template< class T, class Alloc >
-	bool operator>( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+	bool operator>( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
 	
 	//	Operator>=
 	template< class T, class Alloc >
-	bool operator>=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+	bool operator>=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
 
 	/*
 	**	Swap
@@ -447,6 +456,6 @@ namespace ft {
 	*/
 	
 	template< class T, class Alloc >
-	void swap( std::vector<T,Alloc>& lhs, std::vector<T,Alloc>& rhs );
+	void swap( ft::vector<T,Alloc>& lhs, ft::vector<T,Alloc>& rhs );
 }
 #endif /* VECTOR_HPP */

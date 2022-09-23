@@ -9,25 +9,32 @@
 
 namespace ft {
 	
-	template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<std::pair<const Key, T>> >
+	template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<std::pair<const Key, T> > >
 	class map
 	{
-		private:
-			// Key										key_type;
-			// T										mapped_type;
-			// std::pair<const Key, T>					value_type;
-			// std::size_t								size_type;
-			// std::ptrdiff_t							difference_type;
-			// Compare									key_compare;
-			// Allocator								allocator_type;
-			// value_type &							reference;
-			// const value_type &						const_reference;
-			// Allocator::pointer						pointer;
-			// Allocator::const_pointer				const_pointer;
-			// value_type								iterator;
-			// const value_type						const_iterator;
-			// std::reverse_iterator<iterator>			reverse_iterator;
-			// std::reverse_iterator<const_iterator>	const_reverse_iterator;
+		public:
+			
+			/**********************************/
+			/*****      MEMBER TYPES      *****/
+			/**********************************/
+			
+			typedef Key										key_type;
+			typedef T										mapped_type;
+			typedef std::pair<const Key, T>					value_type;
+			typedef std::size_t								size_type;
+			typedef std::ptrdiff_t							difference_type;
+			typedef Compare									key_compare;
+			typedef Allocator								allocator_type;
+			
+			typedef value_type &							reference;
+			typedef const value_type &						const_reference;
+			typedef typename Allocator::pointer				pointer;
+			typedef typename Allocator::const_pointer		const_pointer;
+			
+			typedef value_type								iterator;
+			typedef const value_type						const_iterator;
+			typedef std::reverse_iterator<iterator>			reverse_iterator;
+			typedef std::reverse_iterator<const_iterator>	const_reverse_iterator;
 		
 		public:
 			
@@ -47,16 +54,16 @@ namespace ft {
 			class value_compare
 			{
 				private:
-					// bool	result_type;
-					// value_type	first_argument_type;
-					// value_type	second_argument_type;
+					typedef bool		result_type;
+					typedef value_type	first_argument_type;
+					typedef value_type	second_argument_type;
 					
 				protected:
-					// Compare comp;
-					// value_compare( Compare c );
+					Compare comp;
+					value_compare( Compare c );
 					
 				public:
-					// bool operator()( const value_type& lhs, const value_type& rhs ) const;
+					bool operator()( const value_type& lhs, const value_type& rhs ) const;
 			};
 			
 			
@@ -409,7 +416,7 @@ namespace ft {
 			**	(key-value pairs) by using key_comp to compare the first components of the pairs.
 			*/
 			
-			std::map::value_compare value_comp() const;
+			value_compare value_comp() const;
 	};
 	
 	/******************************************/
@@ -432,27 +439,27 @@ namespace ft {
 	
 	//	Operator==
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator==( const std::map<Key,T,Compare,Alloc>& lhs, const std::map<Key,T,Compare,Alloc>& rhs );
+	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
 	
 	//	Operator!=
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator!=( const std::map<Key,T,Compare,Alloc>& lhs, const std::map<Key,T,Compare,Alloc>& rhs );
+	bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
 	
 	//	Operator<
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<( const std::map<Key,T,Compare,Alloc>& lhs, const std::map<Key,T,Compare,Alloc>& rhs );
+	bool operator<( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
 	
 	//	Operator<=
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<=( const std::map<Key,T,Compare,Alloc>& lhs, const std::map<Key,T,Compare,Alloc>& rhs );
+	bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
 
 	//	Operator>
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>( const std::map<Key,T,Compare,Alloc>& lhs, const std::map<Key,T,Compare,Alloc>& rhs );
+	bool operator>( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
 				
 	//	Operator>=
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>=( const std::map<Key,T,Compare,Alloc>& lhs, const std::map<Key,T,Compare,Alloc>& rhs );
+	bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
 	
 	/*
 	**	Swap
@@ -461,7 +468,7 @@ namespace ft {
 	*/
 	
 	template< class Key, class T, class Compare, class Alloc >
-	void swap( std::map<Key,T,Compare,Alloc>& lhs, std::map<Key,T,Compare,Alloc>& rhs );
+	void swap( ft::map<Key,T,Compare,Alloc>& lhs, ft::map<Key,T,Compare,Alloc>& rhs );
 }
 
 #endif /*MAP_HPP*/

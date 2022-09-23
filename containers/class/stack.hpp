@@ -6,18 +6,24 @@
 # include <string>
 # include <iostream>
 # include <iomanip>
+# include <deque>
 
 namespace ft {
 	
 	template <class T, class Container = std::deque<T> >
 	class stack
 	{
-		private:
-			// Container					container_type;
-			// Container::value_type		value_type;
-			// Container::size_type		size_type;
-			// Container::reference		reference;
-			// Container::const_reference	const_reference;
+		public:
+			
+			/**********************************/
+			/*****      MEMBER TYPES      *****/
+			/**********************************/
+			
+			typedef Container							container_type;
+			typedef typename Container::value_type		value_type;
+			typedef typename Container::size_type		size_type;
+			typedef typename Container::reference		reference;
+			typedef typename Container::const_reference	const_reference;
 		
 		protected:
 			Container	c;
@@ -151,27 +157,27 @@ namespace ft {
 	
 	//	Operator==
 	template< class T, class Container >
-	bool operator==( const std::stack<T,Container>& lhs, const std::stack<T,Container>& rhs );
+	bool operator==( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
 	
 	//	Operator!=
 	template< class T, class Container >
-	bool operator!=( const std::stack<T,Container>& lhs, const std::stack<T,Container>& rhs );
+	bool operator!=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
 	
 	//	Operator<
 	template< class T, class Container >
-	bool operator<( const std::stack<T,Container>& lhs, const std::stack<T,Container>& rhs );
+	bool operator<( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
 	
 	//	Operator<=
 	template< class T, class Container >
-	bool operator<=( const std::stack<T,Container>& lhs, const std::stack<T,Container>& rhs );
+	bool operator<=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
 	
 	//	Operator>
 	template< class T, class Container >
-	bool operator>( const std::stack<T,Container>& lhs, const std::stack<T,Container>& rhs );
+	bool operator>( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
 	
 	//	Operator>=
 	template< class T, class Container >
-	bool operator>=( const std::stack<T,Container>& lhs, const std::stack<T,Container>& rhs );
+	bool operator>=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
 }
 
 #endif /*STACK_HPP*/
