@@ -12,11 +12,11 @@ namespace ft {
 	template <class T, class Allocator = std::allocator<T> >
 	class vector
 	{
-		private:
-			T										value_type;
+		public:
+			// T										value_type;
 			// Allocator								allocator_type;
-			std::size_t								size_type;
-			std::ptrdiff_t							difference_type;
+			// std::size_t								size_type;
+			// std::ptrdiff_t							difference_type;
 			// value_type &							reference;
 			// const value_type &						const_reference;
 			// Allocator::pointer						pointer;
@@ -406,7 +406,7 @@ namespace ft {
 	
 	
 	/*
-	**	Operator
+	**	Operators
 	**
 	**	Compares the contents of two vectors.
 	**		1-2) Checks if the contents of lhs and rhs are equal, that is,

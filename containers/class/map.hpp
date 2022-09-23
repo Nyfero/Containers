@@ -419,7 +419,7 @@ namespace ft {
 	
 	
 	/*
-	**	Operator
+	**	Operators
 	**
 	**	Compares the contents of two maps.
 	**		1-2) Checks if the contents of lhs and rhs are equal, that is, 
