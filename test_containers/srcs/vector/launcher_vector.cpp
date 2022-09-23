@@ -2,11 +2,6 @@
 
 using namespace MyContainerTester;
 
-int	disp_coucou() {
-	std::cout << "coucou" << std::endl;
-	return (0);
-}
-
 int	vector_launch() {
 	std::vector<Tester>	list;
 	
@@ -21,5 +16,7 @@ int	vector_launch() {
 	}
 	catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
+		return (1);
 	}
+	return (0);
 }
