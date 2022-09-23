@@ -10,7 +10,7 @@
 namespace ft {
 	
 	template <class T, class Allocator = std::allocator<T> >
-	class Vector
+	class vector
 	{
 		private:
 			T										value_type;
@@ -39,19 +39,23 @@ namespace ft {
 			**
 			**	Constructs a new container from a variety of data sources, 
 			**	optionally using a user supplied allocator alloc.
-			**	1) Default constructor. Constructs an empty container with a default-constructed allocator.
-			**	2) Constructs an empty container with the given allocator alloc.
-			**	3) Constructs the container with count copies of elements with value value.
-			**	4) Constructs the container with the contents of the range [first, last).
-			**	5) Copy constructor. Constructs the container with the copy of the contents of other. 
+			**		1) Default constructor. Constructs an empty container with a default-constructed allocator.
+			**		2) Constructs an empty container with the given allocator alloc.
+			**		3) Constructs the container with count copies of elements with value value.
+			**		4) Constructs the container with the contents of the range [first, last).
+			**		5) Copy constructor. Constructs the container with the copy of the contents of other. 
 			*/
 			
-			Vector();
-			explicit Vector( const Allocator& alloc );
-			explicit Vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator());
+			vector();
+			
+			explicit vector( const Allocator& alloc );
+			
+			explicit vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator());
+			
 			template< class InputIt >
-			Vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() );
-			Vector( const Vector& other );
+			vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() );
+			
+			vector( const vector& other );
 			
 			
 			/*
@@ -62,7 +66,7 @@ namespace ft {
 			**	the pointed-to objects are not destroyed. 
 			*/
 			
-			~Vector();
+			~vector();
 			
 			
 			/*
@@ -72,7 +76,7 @@ namespace ft {
 			**	Copy assignment operator. Replaces the contents with a copy of the contents of other.
 			*/
 			
-			Vector& operator=( const Vector& other );
+			vector& operator=( const vector& other );
 			
 			
 			/*
@@ -88,6 +92,7 @@ namespace ft {
 			*/
 			
 			void assign( size_type count, const T& value );
+			
 			template< class InputIt >
 			void assign( InputIt first, InputIt last );
 			
@@ -116,6 +121,7 @@ namespace ft {
 			*/
 			
 			reference at( size_type pos );
+			
 			const_reference at( size_type pos ) const;
 			
 			
@@ -127,6 +133,7 @@ namespace ft {
 			*/
 			
 			reference operator[]( size_type pos );
+			
 			const_reference operator[]( size_type pos ) const;
 			
 			
@@ -138,6 +145,7 @@ namespace ft {
 			*/
 			
 			reference front();
+			
 			const_reference front() const;
 			
 			
@@ -149,6 +157,7 @@ namespace ft {
 			*/
 			
 			reference back();
+			
 			const_reference back() const;
 			
 			
@@ -162,6 +171,7 @@ namespace ft {
 			*/
 			
 			T* data();
+			
 			const T* data() const;
 			
 			
@@ -180,6 +190,7 @@ namespace ft {
 			*/
 			
 			iterator begin();
+			
 			const_iterator begin() const;
 			
 			
@@ -191,6 +202,7 @@ namespace ft {
 			*/
 			
 			iterator end();
+			
 			const_iterator end() const;
 			
 			
@@ -203,6 +215,7 @@ namespace ft {
 			*/
 			
 			reverse_iterator rbegin();
+			
 			const_reverse_iterator rbegin() const;
 			
 			
@@ -215,6 +228,7 @@ namespace ft {
 			*/
 			
 			reverse_iterator rend();
+			
 			const_reverse_iterator rend() const;
 			
 			
@@ -310,8 +324,11 @@ namespace ft {
 			*/
 			
 			iterator insert( const_iterator pos, const T& value );
+			
 			iterator insert( const_iterator pos, size_type count, const T& value );
+			
 			constexpr iterator insert( const_iterator pos, size_type count, const T& value );
+			
 			template< class InputIt >
 			iterator insert( const_iterator pos, InputIt first, InputIt last );
 			
@@ -329,6 +346,7 @@ namespace ft {
 			*/
 			
 			iterator erase( iterator pos );
+			
 			iterator erase( iterator first, iterator last );
 			
 			
@@ -378,7 +396,7 @@ namespace ft {
 			**	All iterators and references remain valid. The past-the-end iterator is invalidated. 
 			*/
 			
-			void swap( Vector& other );
+			void swap( vector& other );
 	};
 	
 	/******************************************/
@@ -391,37 +409,44 @@ namespace ft {
 	**	Operator
 	**
 	**	Compares the contents of two vectors.
-	**	1-2) Checks if the contents of lhs and rhs are equal, that is,
-	**	they have the same number of elements and each element in lhs compares equal 
-	**	with the element in rhs at the same position.
-	**	3-6) Compares the contents of lhs and rhs lexicographically.
-	**	The comparison is performed by a function equivalent to std::lexicographical_compare.
+	**		1-2) Checks if the contents of lhs and rhs are equal, that is,
+	**		 they have the same number of elements and each element in lhs compares equal 
+	**		 with the element in rhs at the same position.
+	**		3-6) Compares the contents of lhs and rhs lexicographically.
+	**		 The comparison is performed by a function equivalent to std::lexicographical_compare.
 	*/
-	
 	
 	//	Operator==
 	template< class T, class Alloc >
-	bool operator==( const std::Vector<T,Alloc>& lhs, const std::Vector<T,Alloc>& rhs );
+	bool operator==( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
 	
 	//	Operator!=
 	template< class T, class Alloc >
-	bool operator!=( const std::Vector<T,Alloc>& lhs, const std::Vector<T,Alloc>& rhs );
+	bool operator!=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
 	
 	//	Operator<
 	template< class T, class Alloc >
-	bool operator<( const std::Vector<T,Alloc>& lhs, const std::Vector<T,Alloc>& rhs );
+	bool operator<( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
 	
 	//	Operator<=
 	template< class T, class Alloc >
-	bool operator<=( const std::Vector<T,Alloc>& lhs, const std::Vector<T,Alloc>& rhs );
+	bool operator<=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
 	
 	//	Operator>
 	template< class T, class Alloc >
-	bool operator>( const std::Vector<T,Alloc>& lhs, const std::Vector<T,Alloc>& rhs );
+	bool operator>( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
 	
 	//	Operator>=
 	template< class T, class Alloc >
-	bool operator>=( const std::Vector<T,Alloc>& lhs, const std::Vector<T,Alloc>& rhs );
+	bool operator>=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
 
+	/*
+	**	Swap
+	**
+	**	Specializes the std::swap algorithm for std::vector. Swaps the contents of lhs and rhs. Calls lhs.swap(rhs).
+	*/
+	
+	template< class T, class Alloc >
+	void swap( std::vector<T,Alloc>& lhs, std::vector<T,Alloc>& rhs );
 }
 #endif /* VECTOR_HPP */
