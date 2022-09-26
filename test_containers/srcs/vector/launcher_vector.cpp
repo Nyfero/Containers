@@ -6,12 +6,12 @@ int	vector_launch() {
 	std::vector<Tester>	list;
 	
 	try {
-		Tester t("p", "coucou_0", &disp_coucou);
-		list.push_back(t);
-		std::cout << list.at(0) << std::endl;
-		Tester a("p", "coucou_1", &disp_coucou);
+		Tester a("Vector capacity", "capacity()", &vector_capacity);
+		Tester b("Vector capacity", "reserve()", &vector_reserve);
+		Tester c("Vector modifiers", "resize()", &vector_resize);
 		list.push_back(a);
-		std::cout << list.at(1) << std::endl;
+		list.push_back(b);
+		list.push_back(c);
 		list.at(0).RunTest(list);
 	}
 	catch (const std::exception& e) {

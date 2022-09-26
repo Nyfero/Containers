@@ -3,6 +3,7 @@
 using namespace MyContainerTester;
 
 int	main() {
-	vector_launch();
+	if (vector_launch())
+		return (1);
 	return (0);
 }

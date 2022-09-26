@@ -36,6 +36,13 @@ namespace ft {
 			typedef std::size_t								size_type;
 			typedef std::ptrdiff_t							difference_type;
 			
+		private:
+
+			/**************************************/
+			/*****      MEMBER ATTRIBUTES     *****/
+			/**************************************/
+			
+
 		
 		public:
 			

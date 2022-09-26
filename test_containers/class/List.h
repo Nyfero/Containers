@@ -3,7 +3,28 @@
 
 #include "Tester.hpp"
 
-int	disp_coucou();
-int	vector_launch();
+/****************************/
+/*****      VECTOR      *****/
+/****************************/
+
+int	vector_launch(); // launch all functions to test vector
+
+int	vector_capacity();
+int	vector_reserve();
+
+
+int	vector_resize();
+
+
+
+/*************************/
+/*****      MAP      *****/
+/*************************/
+
+
+
+/***************************/
+/*****      STACK      *****/
+/***************************/
 
 #endif

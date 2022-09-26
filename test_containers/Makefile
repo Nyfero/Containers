@@ -25,7 +25,7 @@ CLASS = $(addprefix $(CLASS_PATH)/, Tester.hpp)
 #    Files
 TESTER_FILE = Tester.cpp
 
-VECTOR_FILES = launcher_vector.cpp vector_test_0.cpp
+VECTOR_FILES = launcher_vector.cpp vector_capacity.cpp vector_reserve.cpp vector_resize.cpp
 
 SRCS_PATH = srcs
 

@@ -9,6 +9,8 @@
 # include <csignal>
 # include <sys/time.h>
 # include <sys/wait.h>
+#include <fstream>
+#include <iterator>
 
 namespace MyContainerTester {
 	
@@ -57,5 +59,7 @@ namespace MyContainerTester {
 	int		Display_error(int status);
 	int		Display(int status);
 }
+
+bool	compareFiles(const std::string& p1, const std::string& p2);
 
 #endif
