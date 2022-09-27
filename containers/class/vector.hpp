@@ -18,23 +18,23 @@ namespace ft {
 			/*****      MEMBER TYPES      *****/
 			/**********************************/
 			
-			typedef T										value_type;
-			typedef Allocator								allocator_type;
+			typedef T											value_type;
+			typedef Allocator									allocator_type;
 			
-			typedef value_type								iterator;
-			typedef const value_type						const_iterator;
+			typedef std::iterator_traits<T>				iterator;
+			typedef std::iterator_traits<const T>		const_iterator;
 			
-			typedef std::reverse_iterator<iterator>			reverse_iterator;
-			typedef std::reverse_iterator<const_iterator>	reverse_const_iterator;
+			typedef std::reverse_iterator<iterator>				reverse_iterator;
+			typedef std::reverse_iterator<const_iterator>		reverse_const_iterator;
 			
-			typedef typename value_type &					reference;
-			typedef typename value_type &					const_reference;
+			typedef typename allocator_type::reference			reference;
+			typedef typename allocator_type::const_reference	const_reference;
 			
-			typedef typename Allocator::pointer				pointer;
-			typedef typename Allocator::const_pointer		const_pointer;
+			typedef typename allocator_type::pointer			pointer;
+			typedef typename allocator_type::const_pointer		const_pointer;
 			
-			typedef std::size_t								size_type;
-			typedef std::ptrdiff_t							difference_type;
+			typedef std::size_t									size_type;
+			typedef std::ptrdiff_t								difference_type;
 			
 		private:
 
@@ -42,7 +42,10 @@ namespace ft {
 			/*****      MEMBER ATTRIBUTES     *****/
 			/**************************************/
 			
-
+			allocator_type	_alloc;
+			pointer			_data;
+			size_type		_size;
+			size_type		_capacity;
 		
 		public:
 			
@@ -64,11 +67,18 @@ namespace ft {
 			**		5) Copy constructor. Constructs the container with the copy of the contents of other. 
 			*/
 			
-			vector();
+			vector(): _alloc(), _data(NULL), _size(0), _capacity(0) {
+			};
 			
-			explicit vector( const Allocator& alloc );
+			explicit vector( const Allocator& alloc ): _alloc(alloc), _data(NULL), _size(0), _capacity(0) {
+			};
 			
-			explicit vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator());
+			explicit vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator()):
+			_alloc(alloc), _capacity(count), _size(0) {
+				while (_size < _capacity) {
+					this->data = new 
+				}
+			};
 			
 			template< class InputIt >
 			vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() );
@@ -84,7 +94,14 @@ namespace ft {
 			**	the pointed-to objects are not destroyed. 
 			*/
 			
-			~vector();
+			~vector() {
+				size_type	i = 0;
+				
+				while (i < this->_capacity) {
+					delete this->_data;
+					i++;
+				}
+			};
 			
 			
 			/*
@@ -234,7 +251,7 @@ namespace ft {
 			
 			reverse_iterator rbegin();
 			
-			const_reverse_iterator rbegin() const;
+			reverse_iterator rbegin() const;
 			
 			
 			/*
@@ -247,7 +264,7 @@ namespace ft {
 			
 			reverse_iterator rend();
 			
-			const_reverse_iterator rend() const;
+			reverse_iterator rend() const;
 			
 			
 			
@@ -465,4 +482,5 @@ namespace ft {
 	template< class T, class Alloc >
 	void swap( ft::vector<T,Alloc>& lhs, ft::vector<T,Alloc>& rhs );
 }
+
 #endif /* VECTOR_HPP */
