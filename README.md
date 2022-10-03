@@ -8,3 +8,6 @@ Getting started:
 Vector:
 * https://en.cppreference.com/w/cpp/container/vector
 * https://en.cppreference.com/w/cpp/memory/allocator
+
+Stack:
+* https://en.cppreference.com/w/cpp/container/stack
