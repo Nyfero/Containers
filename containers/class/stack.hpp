@@ -6,11 +6,11 @@
 # include <string>
 # include <iostream>
 # include <iomanip>
-# include <deque>
+# include <vector>
 
 namespace ft {
 	
-	template <class T, class Container = std::deque<T> >
+	template <class T, class Container = std::vector<T> >
 	class stack
 	{
 		public:
@@ -19,9 +19,10 @@ namespace ft {
 			/*****      MEMBER TYPES      *****/
 			/**********************************/
 			
+			typedef T									value_type;
 			typedef Container							container_type;
-			typedef typename Container::value_type		value_type;
-			typedef typename Container::size_type		size_type;
+			typedef size_t								size_type;
+			
 			typedef typename Container::reference		reference;
 			typedef typename Container::const_reference	const_reference;
 		
@@ -45,9 +46,13 @@ namespace ft {
 			**		2) Copy constructor. The adaptor is copy-constructed with the contents of other.c.
 			*/
 			
-			explicit stack( const Container& cont = Container() );
+			explicit stack( const container_type& cont = container_type() )
+				: c( cont ) {
+			};
 			
-			stack( const stack& other );
+			stack( const stack& other )
+				: c ( other ) {
+			};
 			
 			
 			/*
@@ -57,7 +62,8 @@ namespace ft {
 			**	Note, that if the elements are pointers, the pointed-to objects are not destroyed.
 			*/
 			
-			~stack();
+			~stack() {
+			};
 			
 			
 			/*
@@ -68,7 +74,10 @@ namespace ft {
 			**	Effectively calls c = other.c;.
 			*/
 			
-			stack& operator=( const stack& other );
+			stack& operator=( const stack& other ) {
+				this->c = other.c;
+				return ( *this );
+			};
 			
 			
 			
@@ -86,9 +95,13 @@ namespace ft {
 			**	Effectively calls c.back().
 			*/
 			
-			reference top();
+			reference top() {
+				return ( c.back() );
+			};
 			
-			const_reference top() const;
+			const_reference top() const {
+				return ( c.back() );
+			};
 			
 			
 			
@@ -104,7 +117,9 @@ namespace ft {
 			**	Checks if the underlying container has no elements, i.e. whether c.empty().
 			*/
 			
-			bool empty() const;
+			bool empty() const {
+				return ( c.empty() );
+			};
 			
 			
 			/*
@@ -113,7 +128,9 @@ namespace ft {
 			**	Returns the number of elements in the underlying container, that is, c.size().
 			*/
 			
-			size_type size() const;
+			size_type size() const {
+				return ( c.size() );
+			};
 			
 			
 			
@@ -130,7 +147,9 @@ namespace ft {
 			**	Effectively calls c.push_back(value).
 			*/
 			
-			void push( const value_type& value );
+			void push( const value_type& value ) {
+				c.push_back( value );
+			};
 			
 			
 			/*
@@ -139,7 +158,9 @@ namespace ft {
 			**	Removes the top element from the stack. Effectively calls c.pop_back().
 			*/
 			
-			void pop();
+			void pop() {
+				c.push_back();
+			};
 	};
 	
 	/******************************************/
@@ -156,28 +177,40 @@ namespace ft {
 	*/
 	
 	//	Operator==
-	template< class T, class Container >
-	bool operator==( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
+	template< class value_type, class container_type >
+	bool operator==( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+		return ( lhs.c == rhs.c );
+	};
 	
 	//	Operator!=
-	template< class T, class Container >
-	bool operator!=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
+	template< class value_type, class container_type >
+	bool operator!=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+		return ( lhs.c != rhs.c );
+	};
 	
 	//	Operator<
-	template< class T, class Container >
-	bool operator<( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
+	template< class value_type, class container_type >
+	bool operator<( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+		return ( lhs.c < rhs.c );
+	};
 	
 	//	Operator<=
-	template< class T, class Container >
-	bool operator<=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
+	template< class value_type, class container_type >
+	bool operator<=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+		return ( lhs.c <= rhs.c );
+	};
 	
 	//	Operator>
-	template< class T, class Container >
-	bool operator>( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
+	template< class value_type, class container_type >
+	bool operator>( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+		return ( lhs.c > rhs.c );
+	};
 	
 	//	Operator>=
-	template< class T, class Container >
-	bool operator>=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs );
+	template< class value_type, class container_type >
+	bool operator>=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+		return ( lhs.c >= rhs.c );
+	};
 }
 
 #endif /*STACK_HPP*/
