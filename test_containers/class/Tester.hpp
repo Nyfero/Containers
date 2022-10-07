@@ -6,6 +6,7 @@
 # include <iomanip>
 # include <algorithm>
 # include <vector>
+# include <stack>
 # include <csignal>
 # include <sys/time.h>
 # include <sys/wait.h>

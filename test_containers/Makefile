@@ -27,13 +27,21 @@ TESTER_FILE = Tester.cpp
 
 VECTOR_FILES = launcher_vector.cpp vector_capacity.cpp vector_reserve.cpp vector_resize.cpp
 
+STACK_FILES = launcher_stack.cpp stack_constructor.cpp stack_empty.cpp stack_operator_diff.cpp \
+	stack_operator_inf.cpp stack_operator_einf.cpp stack_operator_equ.cpp stack_operator_supp.cpp \
+	stack_operator_esupp.cpp stack_pop.cpp stack_push.cpp stack_size.cpp stack_top.cpp \
+	stack_constructor_assign.cpp
+
 SRCS_PATH = srcs
 
 VECTOR_PATH = $(SRCS_PATH)/vector
 
+STACK_PATH = $(SRCS_PATH)/stack
+
 SRCS = $(addprefix framework/, $(TESTER_FILE)) \
-	$(addprefix $(VECTOR_PATH)/, $(VECTOR_FILES)) \
+	$(addprefix $(STACK_PATH)/, $(STACK_FILES)) \
 	main.cpp
+	#$(addprefix $(VECTOR_PATH)/, $(VECTOR_FILES)) \
 
 #    Compilation
 NAME = test_containers
