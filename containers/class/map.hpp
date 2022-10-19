@@ -45,29 +45,31 @@ namespace ft {
 			
 			
 			/*
-			**	Value_compare
 			**
+			**	Value_compare
 			**	std::map::value_compare is a function object that compares objects of type
 			**	std::map::value_type (key-value pairs) by comparing of the first components of the pairs.
 			*/
 			
 			class value_compare
 			{
-				private:
-					typedef bool		result_type;
-					typedef value_type	first_argument_type;
-					typedef value_type	second_argument_type;
-					
+				friend class map;
+				
 				protected:
 					Compare comp;
-					value_compare( Compare c );
-					
+					value_compare( Compare c ) : comp(c) {}
+				
 				public:
-					bool operator()( const value_type& lhs, const value_type& rhs ) const;
+					typedef bool result_type;
+					typedef value_type first_argument_type;
+					typedef value_type second_argument_type;
+					bool operator()( const value_type& x, const value_type& y ) const {
+						return comp(x.first, y.first);
+					}
 			};
 			
 			
-			
+
 			/**************************************/
 			/*****      MEMBER FUNCTIONS      *****/
 			/**************************************/
@@ -86,14 +88,75 @@ namespace ft {
 			**		4) Copy constructor. Constructs the container with the copy of the contents of other.
 			*/
 			
-			map();
+			map() : _size(0), _root(NULL), _begin(NULL), _end(NULL) {
+				_root = new Node();
+				_begin = new Node();
+				_end = new Node();
+				_root->parent = _end;
+				_root->left = _end;
+				_root->right = _end;
+				_begin->parent = _root;
+				_begin->left = _end;
+				_begin->right = _end;
+				_end->parent = _root;
+				_end->left = _end;
+				_end->right = _end;
+			};
 			
-			explicit map( const Compare& comp, const Allocator& alloc = Allocator() );
+			explicit map( const Compare& comp, const Allocator& alloc = Allocator() ) : _size(0), _root(NULL), _begin(NULL), _end(NULL) {
+				_root = new Node();
+				_begin = new Node();
+				_end = new Node();
+				_root->parent = _end;
+				_root->left = _end;
+				_root->right = _end;
+				_begin->parent = _root;
+				_begin->left = _end;
+				_begin->right = _end;
+				_end->parent = _root;
+				_end->left = _end;
+				_end->right = _end;
+			};
 			
 			template< class InputIt >
-			map( InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator() );
+			map( InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator() ) : _size(0), _root(NULL), _begin(NULL), _end(NULL) {
+				_root = new Node();
+				_begin = new Node();
+				_end = new Node();
+				_root->parent = _end;
+				_root->left = _end;
+				_root->right = _end;
+				_begin->parent = _root;
+				_begin->left = _end;
+				_begin->right = _end;
+				_end->parent = _root;
+				_end->left = _end;
+				_end->right = _end;
+				while (first != last) {
+					insert(*first);
+					first++;
+				}
+			};
 			
-			map( const map& other );
+			map( const map& other ) : _size(0), _root(NULL), _begin(NULL), _end(NULL) {
+				_root = new Node();
+				_begin = new Node();
+				_end = new Node();
+				_root->parent = _end;
+				_root->left = _end;
+				_root->right = _end;
+				_begin->parent = _root;
+				_begin->left = _end;
+				_begin->right = _end;
+				_end->parent = _root;
+				_end->left = _end;
+				_end->right = _end;
+				iterator it = other.begin();
+				while (it != other.end()) {
+					insert(*it);
+					it++;
+				}
+			};
 			
 			
 			/*
@@ -103,7 +166,12 @@ namespace ft {
 			**	Note, that if the elements are pointers, the pointed-to objects are not destroyed.
 			*/
 			
-			~map();
+			~map() {
+				clear();
+				delete _root;
+				delete _begin;
+				delete _end;
+			};
 			
 			
 			/*
@@ -113,7 +181,15 @@ namespace ft {
 			**	Copy assignment operator. Replaces the contents with a copy of the contents of other.
 			*/
 			
-			map& operator=( const map& other );
+			map& operator=( const map& other ) {
+				clear();
+				iterator it = other.begin();
+				while (it != other.end()) {
+					insert(*it);
+					it++;
+				}
+				return *this;
+			};
 			
 			
 			/*
@@ -122,7 +198,9 @@ namespace ft {
 			**	Returns the allocator associated with the container.
 			*/
 			
-			allocator_type get_allocator() const;
+			allocator_type get_allocator() const {
+				return _alloc;
+			};
 			
 			
 			
@@ -139,9 +217,19 @@ namespace ft {
 			**	If no such element exists, an exception of type std::out_of_range is thrown. 
 			*/
 			
-			T& at( const Key& key );
+			T& at( const Key& key ) {
+				iterator it = find(key);
+				if (it == end())
+					throw std::out_of_range("Key not found");
+				return it->second;
+			};
 			
-			const T& at( const Key& key ) const;
+			const T& at( const Key& key ) const {
+				const_iterator it = find(key);
+				if (it == end())
+					throw std::out_of_range("Key not found");
+				return it->second;
+			};
 			
 			/*
 			**	Operator[]
@@ -156,7 +244,14 @@ namespace ft {
 			**	(default-constructed for class types, zero-initialized otherwise) and a reference to it is returned.
 			*/
 			
-			T& operator[]( const Key& key );
+			T& operator[]( const Key& key ) {
+				iterator it = find(key);
+				if (it == end()) {
+					insert(std::make_pair(key, T()));
+					it = find(key);
+				}
+				return it->second;
+			};
 			
 			
 			
@@ -173,9 +268,13 @@ namespace ft {
 			**	If the map is empty, the returned iterator will be equal to end().
 			*/
 			
-			iterator begin();
+			iterator begin() {
+				return iterator(_begin);
+			};
 			
-			const_iterator begin() const;
+			const_iterator begin() const {
+				return const_iterator(_begin);
+			};
 			
 			
 			/*
@@ -185,9 +284,13 @@ namespace ft {
 			**	This element acts as a placeholder; attempting to access it results in undefined behavior.
 			*/
 			
-			iterator end();
+			iterator end() {
+				return iterator(_end);
+			};
 			
-			const_iterator end() const;
+			const_iterator end() const {
+				return const_iterator(_end);
+			};
 			
 			
 			/*
@@ -198,9 +301,13 @@ namespace ft {
 			**	If the map is empty, the returned iterator is equal to rend(). 
 			*/
 			
-			reverse_iterator rbegin();
+			reverse_iterator rbegin() {
+				return reverse_iterator(_end);
+			};
 			
-			const_reverse_iterator rbegin() const;
+			const_reverse_iterator rbegin() const {
+				return const_reverse_iterator(_end);
+			};
 			
 			
 			/*
@@ -211,9 +318,13 @@ namespace ft {
 			**	This element acts as a placeholder, attempting to access it results in undefined behavior.
 			*/
 			
-			reverse_iterator rend();
+			reverse_iterator rend() {
+				return reverse_iterator(_begin);
+			};
 			
-			const_reverse_iterator rend() const;
+			const_reverse_iterator rend() const {
+				return const_reverse_iterator(_begin);
+			};
 			
 			
 			
@@ -229,7 +340,9 @@ namespace ft {
 			**	Checks if the container has no elements, i.e. whether begin() == end().
 			*/
 			
-			bool empty() const;
+			bool empty() const {
+				return _size == 0;
+			};
 			
 			
 			/*
@@ -238,7 +351,9 @@ namespace ft {
 			**	Returns the number of elements in the container, i.e. std::distance(begin(), end()).
 			*/
 			
-			size_type size() const;
+			size_type size() const {
+				return _size;
+			};
 			
 			
 			/*
@@ -249,7 +364,9 @@ namespace ft {
 			**	i.e. std::distance(begin(), end()) for the largest container.
 			*/
 			
-			size_type max_size() const;
+			size_type max_size() const {
+				return std::numeric_limits<size_type>::max();
+			};
 			
 			
 			
@@ -267,7 +384,12 @@ namespace ft {
 			**	Any past-the-end iterator remains valid.
 			*/
 			
-			void clear();
+			void clear() {
+				_size = 0;
+				_begin = _end;
+				_end->next = _end;
+				_end->prev = _end;
+			};
 			
 			
 			/*
@@ -286,12 +408,19 @@ namespace ft {
 			**		 have keys that compare equivalent, it is unspecified which element is inserted (pending LWG2844).
 			*/
 			
-			std::pair<iterator, bool> insert( const value_type& value );
+			std::pair<iterator, bool> insert( const value_type& value ) {
+				return insert(value.first, value.second);
+			};
 			
-			iterator insert( iterator hint, const value_type& value );
+			iterator insert( iterator hint, const value_type& value ) {
+				return insert(hint, value.first, value.second);
+			};
 			
 			template< class InputIt >
-			void insert( InputIt first, InputIt last );
+			void insert( InputIt first, InputIt last ) {
+				for (; first != last; ++first)
+					insert(*first);
+			};
 			
 			
 			/*
@@ -307,11 +436,26 @@ namespace ft {
 			**	Thus the end() iterator (which is valid, but is not dereferenceable) cannot be used as a value for pos.
 			*/
 			
-			iterator erase( iterator pos );
+			iterator erase( iterator pos ) {
+				iterator next = pos;
+				++next;
+				erase(pos, next);
+				return next;
+			};
 			
-			iterator erase( iterator first, iterator last );
+			iterator erase( iterator first, iterator last ) {
+				while (first != last)
+					erase(first++);
+				return last;
+			};
 			
-			size_type erase( const Key& key );
+			size_type erase( const Key& key ) {
+				iterator it = find(key);
+				if (it == end())
+					return 0;
+				erase(it);
+				return 1;
+			};
 			
 			
 			/*
@@ -323,7 +467,11 @@ namespace ft {
 			**	The Compare objects must be Swappable, and they are exchanged using unqualified call to non-member swap.
 			*/
 			
-			void swap( map& other );
+			void swap( map& other ) {
+				std::swap(_begin, other._begin);
+				std::swap(_end, other._end);
+				std::swap(_size, other._size);
+			};
 			
 			
 			
@@ -341,7 +489,9 @@ namespace ft {
 			**	Returns the number of elements with key key.
 			*/
 			
-			size_type count( const Key& key ) const;
+			size_type count( const Key& key ) const {
+				return find(key) == end() ? 0 : 1;
+			};
 			
 			
 			/*
@@ -350,9 +500,25 @@ namespace ft {
 			**	Finds an element with key equivalent to key.
 			*/
 			
-			iterator find( const Key& key );
+			iterator find( const Key& key ) {
+				iterator it = begin();
+				while (it != end()) {
+					if (it->first == key)
+						return it;
+					++it;
+				}
+				return it;
+			};
 			
-			const_iterator find( const Key& key ) const;
+			const_iterator find( const Key& key ) const {
+				const_iterator it = begin();
+				while (it != end()) {
+					if (it->first == key)
+						return it;
+					++it;
+				}
+				return it;
+			};
 			
 			
 			/*
@@ -365,9 +531,19 @@ namespace ft {
 			**	Compares the keys to key.
 			*/
 			
-			std::pair<iterator,iterator> equal_range( const Key& key );
+			std::pair<iterator,iterator> equal_range( const Key& key ) {
+				iterator it = find(key);
+				if (it == end())
+					return std::make_pair(it, it);
+				return std::make_pair(it, ++it);
+			};
 			
-			std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const;
+			std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
+				const_iterator it = find(key);
+				if (it == end())
+					return std::make_pair(it, it);
+				return std::make_pair(it, ++it);
+			};
 			
 			
 			/*
@@ -376,9 +552,25 @@ namespace ft {
 			**	Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
 			*/
 			
-			iterator lower_bound( const Key& key );
+			iterator lower_bound( const Key& key ) {
+				iterator it = begin();
+				while (it != end()) {
+					if (it->first >= key)
+						return it;
+					++it;
+				}
+				return it;
+			};
 			
-			const_iterator lower_bound( const Key& key ) const;
+			const_iterator lower_bound( const Key& key ) const {
+				const_iterator it = begin();
+				while (it != end()) {
+					if (it->first >= key)
+						return it;
+					++it;
+				}
+				return it;
+			};
 			
 			
 			/*
@@ -387,9 +579,25 @@ namespace ft {
 			**	Returns an iterator pointing to the first element that is greater than key.
 			*/
 			
-			iterator upper_bound( const Key& key );
+			iterator upper_bound( const Key& key ) {
+				iterator it = begin();
+				while (it != end()) {
+					if (it->first > key)
+						return it;
+					++it;
+				}
+				return it;
+			};
 			
-			const_iterator upper_bound( const Key& key ) const;
+			const_iterator upper_bound( const Key& key ) const {
+				const_iterator it = begin();
+				while (it != end()) {
+					if (it->first > key)
+						return it;
+					++it;
+				}
+				return it;
+			};
 			
 			
 			
@@ -406,7 +614,9 @@ namespace ft {
 			**	which is a copy of this container's constructor argument comp.
 			*/
 			
-			key_compare key_comp() const;
+			key_compare key_comp() const {
+				return _comp;
+			};
 			
 			
 			/*
@@ -416,7 +626,9 @@ namespace ft {
 			**	(key-value pairs) by using key_comp to compare the first components of the pairs.
 			*/
 			
-			value_compare value_comp() const;
+			value_compare value_comp() const {
+				return _comp;
+			};
 	};
 	
 	/******************************************/
@@ -436,30 +648,68 @@ namespace ft {
 	**		 The comparison is performed by a function equivalent to std::lexicographical_compare.
 	**		 This comparison ignores the map's ordering Compare.
 	*/
-	
+
 	//	Operator==
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
+	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		if (lhs.size() != rhs.size())
+			return false;
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it1 = lhs.begin();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it2 = rhs.begin();
+		while (it1 != lhs.end()) {
+			if (it1->first != it2->first || it1->second != it2->second)
+				return false;
+			++it1;
+			++it2;
+		}
+		return true;
+	};
 	
 	//	Operator!=
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
+	bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		return !(lhs == rhs);
+	};
 	
 	//	Operator<
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
+	bool operator<( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it1 = lhs.begin();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it2 = rhs.begin();
+		while (it1 != lhs.end() && it2 != rhs.end()) {
+			if (it1->first < it2->first)
+				return true;
+			else if (it1->first > it2->first)
+				return false;
+			else if (it1->second < it2->second)
+				return true;
+			else if (it1->second > it2->second)
+				return false;
+			++it1;
+			++it2;
+		}
+		if (it1 == lhs.end() && it2 != rhs.end())
+			return true;
+		return false;
+	};
 	
 	//	Operator<=
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
+	bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		return !(rhs < lhs);
+	};
 
 	//	Operator>
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
+	bool operator>( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		return (rhs < lhs);
+	};
 				
 	//	Operator>=
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs );
+	bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		return !(lhs < rhs);
+	};
 	
 	/*
 	**	Swap
@@ -468,7 +718,10 @@ namespace ft {
 	*/
 	
 	template< class Key, class T, class Compare, class Alloc >
-	void swap( ft::map<Key,T,Compare,Alloc>& lhs, ft::map<Key,T,Compare,Alloc>& rhs );
-}
+	void swap( ft::map<Key,T,Compare,Alloc>& lhs, ft::map<Key,T,Compare,Alloc>& rhs ) {
+		lhs.swap(rhs);
+	};
+
+} // namespace ft
 
 #endif /*MAP_HPP*/

@@ -21,8 +21,8 @@ namespace ft {
 			typedef T											value_type;
 			typedef Allocator									allocator_type;
 			
-			typedef std::iterator_traits<T>				iterator;
-			typedef std::iterator_traits<const T>		const_iterator;
+			typedef std::iterator_traits<T>						iterator;
+			typedef std::iterator_traits<const T>				const_iterator;
 			
 			typedef std::reverse_iterator<iterator>				reverse_iterator;
 			typedef std::reverse_iterator<const_iterator>		reverse_const_iterator;
@@ -68,22 +68,54 @@ namespace ft {
 			*/
 			
 			vector(): _alloc(), _data(NULL), _size(0), _capacity(0) {
+				// std::cout << "Default constructor called" << std::endl;
+				_data = _alloc.allocate(_capacity);
+				for (size_type i = 0; i < _size; i++)
+					_alloc.construct(_data + i, value_type());
+				// std::cout << "Default constructor finished" << std::endl;
 			};
 			
 			explicit vector( const Allocator& alloc ): _alloc(alloc), _data(NULL), _size(0), _capacity(0) {
+				// std::cout << "Allocator constructor called" << std::endl;
+				_data = _alloc.allocate(_capacity);
+				for (size_type i = 0; i < _size; i++)
+					_alloc.construct(_data + i, value_type());
+				// std::cout << "Allocator constructor finished" << std::endl;
 			};
 			
 			explicit vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator()):
 			_alloc(alloc), _capacity(count), _size(0) {
-				while (_size < _capacity) {
-					this->data = new 
-				}
+				// std::cout << "Fill constructor called" << std::endl;
+				_data = _alloc.allocate(_capacity);
+				for (size_type i = 0; i < _capacity; i++)
+					_alloc.construct(_data + i, value);
+				_size = _capacity;
+				// std::cout << "Fill constructor finished" << std::endl;
 			};
 			
 			template< class InputIt >
-			vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() );
+			vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() ) {
+				// std::cout << "Range constructor called" << std::endl;
+				_alloc = alloc;
+				_size = 0;
+				_capacity = 0;
+				_data = _alloc.allocate(_capacity);
+				for (InputIt it = first; it != last; it++) {
+					push_back(*it);
+				}
+				// std::cout << "Range constructor finished" << std::endl;
+			};
 			
-			vector( const vector& other );
+			vector( const vector& other ) {
+				// std::cout << "Copy constructor called" << std::endl;
+				_alloc = other._alloc;
+				_size = other._size;
+				_capacity = other._capacity;
+				_data = _alloc.allocate(_capacity);
+				for (size_type i = 0; i < _size; i++)
+					_alloc.construct(_data + i, other._data[i]);
+				// std::cout << "Copy constructor finished" << std::endl;
+			};
 			
 			
 			/*
@@ -95,12 +127,11 @@ namespace ft {
 			*/
 			
 			~vector() {
-				size_type	i = 0;
-				
-				while (i < this->_capacity) {
-					delete this->_data;
-					i++;
-				}
+				// std::cout << "Destructor called" << std::endl;
+				for (size_type i = 0; i < _size; i++)
+					_alloc.destroy(_data + i);
+				_alloc.deallocate(_data, _capacity);
+				// std::cout << "Destructor finished" << std::endl;
 			};
 			
 			
@@ -111,7 +142,22 @@ namespace ft {
 			**	Copy assignment operator. Replaces the contents with a copy of the contents of other.
 			*/
 			
-			vector& operator=( const vector& other );
+			vector& operator=( const vector& other ) {
+				// std::cout << "Copy assignment operator called" << std::endl;
+				if (this != &other) {
+					for (size_type i = 0; i < _size; i++)
+						_alloc.destroy(_data + i);
+					_alloc.deallocate(_data, _capacity);
+					_alloc = other._alloc;
+					_size = other._size;
+					_capacity = other._capacity;
+					_data = _alloc.allocate(_capacity);
+					for (size_type i = 0; i < _size; i++)
+						_alloc.construct(_data + i, other._data[i]);
+				}
+				// std::cout << "Copy assignment operator finished" << std::endl;
+				return *this;
+			};
 			
 			
 			/*
@@ -126,10 +172,34 @@ namespace ft {
 			**	The past-the-end iterator is also invalidated. 
 			*/
 			
-			void assign( size_type count, const T& value );
+			void assign( size_type count, const T& value ) {
+				// std::cout << "Assign called" << std::endl;
+				for (size_type i = 0; i < _size; i++)
+					_alloc.destroy(_data + i);
+				_alloc.deallocate(_data, _capacity);
+				_size = 0;
+				_capacity = count;
+				_data = _alloc.allocate(_capacity);
+				for (size_type i = 0; i < _capacity; i++)
+					_alloc.construct(_data + i, value);
+				_size = _capacity;
+				// std::cout << "Assign finished" << std::endl;
+			};
 			
 			template< class InputIt >
-			void assign( InputIt first, InputIt last );
+			void assign( InputIt first, InputIt last ) {
+				// std::cout << "Assign called" << std::endl;
+				for (size_type i = 0; i < _size; i++)
+					_alloc.destroy(_data + i);
+				_alloc.deallocate(_data, _capacity);
+				_size = 0;
+				_capacity = 0;
+				_data = _alloc.allocate(_capacity);
+				for (InputIt it = first; it != last; it++) {
+					push_back(*it);
+				}
+				// std::cout << "Assign finished" << std::endl;
+			};
 			
 			
 			/*
@@ -138,7 +208,9 @@ namespace ft {
 			**	Returns the allocator associated with the container.
 			*/
 			
-			allocator_type get_allocator() const;
+			allocator_type get_allocator() const {
+				return _alloc;
+			};
 			
 			
 			
@@ -155,9 +227,17 @@ namespace ft {
 			**	If pos is not within the range of the container, an exception of type std::out_of_range is thrown.
 			*/
 			
-			reference at( size_type pos );
+			reference at( size_type pos ) {
+				if (pos >= _size)
+					throw std::out_of_range("vector::at");
+				return _data[pos];
+			};
 			
-			const_reference at( size_type pos ) const;
+			const_reference at( size_type pos ) const {
+				if (pos >= _size)
+					throw std::out_of_range("vector::at");
+				return _data[pos];
+			};
 			
 			
 			/*
@@ -167,9 +247,13 @@ namespace ft {
 			**	No bounds checking is performed.
 			*/
 			
-			reference operator[]( size_type pos );
+			reference operator[]( size_type pos ) {
+				return _data[pos];
+			};
 			
-			const_reference operator[]( size_type pos ) const;
+			const_reference operator[]( size_type pos ) const {
+				return _data[pos];
+			};
 			
 			
 			/*
@@ -179,9 +263,13 @@ namespace ft {
 			**	Calling front on an empty container is undefined.
 			*/
 			
-			reference front();
+			reference front() {
+				return _data[0];
+			};
 			
-			const_reference front() const;
+			const_reference front() const {
+				return _data[0];
+			};
 			
 			
 			/*
@@ -191,9 +279,13 @@ namespace ft {
 			**	Calling back on an empty container causes undefined behavior.
 			*/
 			
-			reference back();
+			reference back() {
+				return _data[_size - 1];
+			};
 			
-			const_reference back() const;
+			const_reference back() const {
+				return _data[_size - 1];
+			};
 			
 			
 			/*
@@ -205,9 +297,13 @@ namespace ft {
 			**	dereferenceable in that case).
 			*/
 			
-			T* data();
+			T* data() {
+				return _data;
+			};
 			
-			const T* data() const;
+			const T* data() const {
+				return _data;
+			};
 			
 			
 			
@@ -224,9 +320,13 @@ namespace ft {
 			**	If the vector is empty, the returned iterator will be equal to end().
 			*/
 			
-			iterator begin();
+			iterator begin() {
+				return iterator(_data);
+			};
 			
-			const_iterator begin() const;
+			const_iterator begin() const {
+				return const_iterator(_data);
+			};
 			
 			
 			/*
@@ -236,9 +336,13 @@ namespace ft {
 			**	This element acts as a placeholder; attempting to access it results in undefined behavior.
 			*/
 			
-			iterator end();
+			iterator end() {
+				return iterator(_data + _size);
+			};
 			
-			const_iterator end() const;
+			const_iterator end() const {
+				return const_iterator(_data + _size);
+			};
 			
 			
 			/*
@@ -249,9 +353,13 @@ namespace ft {
 			**	If the vector is empty, the returned iterator is equal to rend(). 
 			*/
 			
-			reverse_iterator rbegin();
+			reverse_iterator rbegin() {
+				return reverse_iterator(_data + _size - 1);
+			};
 			
-			reverse_iterator rbegin() const;
+			reverse_iterator rbegin() const {
+				return reverse_iterator(_data + _size - 1);
+			};
 			
 			
 			/*
@@ -262,9 +370,13 @@ namespace ft {
 			**	This element acts as a placeholder, attempting to access it results in undefined behavior.
 			*/
 			
-			reverse_iterator rend();
+			reverse_iterator rend() {
+				return reverse_iterator(_data - 1);
+			};
 			
-			reverse_iterator rend() const;
+			reverse_iterator rend() const {
+				return reverse_iterator(_data - 1);
+			};
 			
 			
 			
@@ -280,7 +392,9 @@ namespace ft {
 			**	Checks if the container has no elements, i.e. whether begin() == end().
 			*/
 			
-			bool empty() const;
+			bool empty() const {
+				return _size == 0;
+			};
 			
 			
 			/*
@@ -289,7 +403,9 @@ namespace ft {
 			**	Returns the number of elements in the container, i.e. std::distance(begin(), end()).
 			*/
 			
-			size_type size() const;
+			size_type size() const {
+				return _size;
+			};
 			
 			
 			/*
@@ -316,7 +432,12 @@ namespace ft {
 			**	elements are invalidated. Otherwise, no iterators or references are invalidated.
 			*/
 			
-			void reserve( size_type new_cap );
+			void reserve( size_type new_cap ) {
+				if (new_cap > _capacity) {
+					_capacity = new_cap;
+					_data = _alloc.allocate(_capacity);
+				}
+			};
 			
 			
 			/*
@@ -325,7 +446,9 @@ namespace ft {
 			**	Returns the number of elements that the container has currently allocated space for. 
 			*/
 			
-			size_type capacity() const;
+			size_type capacity() const {
+				return _capacity;
+			};
 			
 			
 			
@@ -345,7 +468,9 @@ namespace ft {
 			**	restriction on the changes to capacity is in the specification of vector::reserve).
 			*/
 			
-			void clear();
+			void clear() {
+				_size = 0;
+			};
 			
 			
 			/*
@@ -358,12 +483,62 @@ namespace ft {
 			**	The past-the-end iterator is also invalidated.
 			*/
 			
-			iterator insert( const_iterator pos, const T& value );
+			iterator insert( const_iterator pos, const T& value ) {
+				if (_size == _capacity) {
+					_capacity *= 2;
+					_data = _alloc.allocate(_capacity);
+				}
+				_size++;
+				iterator it = iterator(_data + _size - 1);
+				while (it != pos) {
+					*it = *(it - 1);
+					it--;
+				}
+				*it = value;
+				return it;
+			};
 			
-			iterator insert( const_iterator pos, size_type count, const T& value );
+			iterator insert( const_iterator pos, size_type count, const T& value ) {
+				if (_size + count > _capacity) {
+					_capacity = _size + count;
+					_data = _alloc.allocate(_capacity);
+				}
+				_size += count;
+				iterator it = iterator(_data + _size - 1);
+				while (it != pos) {
+					*it = *(it - count);
+					it--;
+				}
+				while (it != pos + count) {
+					*it = value;
+					it++;
+				}
+				return it;
+			};
 			
 			template< class InputIt >
-			iterator insert( const_iterator pos, InputIt first, InputIt last );
+			iterator insert( const_iterator pos, InputIt first, InputIt last ) {
+				size_type count = 0;
+				for (InputIt it = first; it != last; it++) {
+					count++;
+				}
+				if (_size + count > _capacity) {
+					_capacity = _size + count;
+					_data = _alloc.allocate(_capacity);
+				}
+				_size += count;
+				iterator it = iterator(_data + _size - 1);
+				while (it != pos) {
+					*it = *(it - count);
+					it--;
+				}
+				while (it != pos + count) {
+					*it = *first;
+					it++;
+					first++;
+				}
+				return it;
+			};
 			
 			
 			/*
@@ -378,9 +553,25 @@ namespace ft {
 			**	The iterator first does not need to be dereferenceable if first == last: erasing an empty range is a no-op.
 			*/
 			
-			iterator erase( iterator pos );
+			iterator erase( iterator pos ) {
+				iterator it = pos;
+				while (it != end()) {
+					*it = *(it + 1);
+					it++;
+				}
+				_size--;
+				return pos;
+			};
 			
-			iterator erase( iterator first, iterator last );
+			iterator erase( iterator first, iterator last ) {
+				iterator it = first;
+				while (it != last) {
+					*it = *(it + (last - first));
+					it++;
+				}
+				_size -= (last - first);
+				return first;
+			};
 			
 			
 			/*
@@ -394,7 +585,14 @@ namespace ft {
 			**	Otherwise only the past-the-end iterator is invalidated.
 			*/
 			
-			void push_back( const T& value );
+			void push_back( const T& value ) {
+				if (_size == _capacity) {
+					_capacity *= 2;
+					_data = _alloc.allocate(_capacity);
+				}
+				_data[_size] = value;
+				_size++;
+			};
 			
 			
 			/*
@@ -405,7 +603,9 @@ namespace ft {
 			**	Iterators and references to the last element, as well as the end() iterator, are invalidated.
 			*/
 			
-			void pop_back();
+			void pop_back() {
+				_size--;
+			};
 			
 			
 			/*
@@ -418,7 +618,18 @@ namespace ft {
 			**		2) additional copies of value are appended.
 			*/
 			
-			void resize( size_type count, T value = T() );
+			void resize( size_type count, T value = T() ) {
+				if (count > _size) {
+					if (count > _capacity) {
+						_capacity = count;
+						_data = _alloc.allocate(_capacity);
+					}
+					for (size_type i = _size; i < count; i++) {
+						_data[i] = value;
+					}
+				}
+				_size = count;
+			};
 			
 			
 			/*
@@ -429,7 +640,20 @@ namespace ft {
 			**	All iterators and references remain valid. The past-the-end iterator is invalidated. 
 			*/
 			
-			void swap( vector& other );
+			void swap( vector& other ) {
+				allocator_type tmp_alloc = _alloc;
+				_alloc = other._alloc;
+				other._alloc = tmp_alloc;
+				pointer tmp_data = _data;
+				_data = other._data;
+				other._data = tmp_data;
+				size_type tmp_size = _size;
+				_size = other._size;
+				other._size = tmp_size;
+				size_type tmp_capacity = _capacity;
+				_capacity = other._capacity;
+				other._capacity = tmp_capacity;
+			};
 	};
 	
 	/******************************************/
@@ -451,27 +675,55 @@ namespace ft {
 	
 	//	Operator==
 	template< class T, class Alloc >
-	bool operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
+	bool operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
+		if (lhs.size() != rhs.size()) {
+			return false;
+		}
+		for (size_t i = 0; i < lhs.size(); i++) {
+			if (lhs[i] != rhs[i]) {
+				return false;
+			}
+		}
+		return true;
+	};
 	
 	//	Operator!=
 	template< class T, class Alloc >
-	bool operator!=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
+	bool operator!=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
+		return !(lhs == rhs);
+	};
 	
 	//	Operator<
 	template< class T, class Alloc >
-	bool operator<( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
+	bool operator<( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
+		if (lhs.size() < rhs.size()) {
+			return true;
+		}
+		for (size_t i = 0; i < lhs.size(); i++) {
+			if (lhs[i] < rhs[i]) {
+				return true;
+			}
+		}
+		return false;
+	};
 	
 	//	Operator<=
 	template< class T, class Alloc >
-	bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
+	bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
+		return !(rhs < lhs);
+	};
 	
 	//	Operator>
 	template< class T, class Alloc >
-	bool operator>( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
+	bool operator>( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
+		return (rhs < lhs);
+	};
 	
 	//	Operator>=
 	template< class T, class Alloc >
-	bool operator>=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
+	bool operator>=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
+		return !(lhs < rhs);
+	};
 
 	/*
 	**	Swap
@@ -480,7 +732,10 @@ namespace ft {
 	*/
 	
 	template< class T, class Alloc >
-	void swap( ft::vector<T,Alloc>& lhs, ft::vector<T,Alloc>& rhs );
-}
+	void swap( ft::vector<T,Alloc>& lhs, ft::vector<T,Alloc>& rhs ) {
+		lhs.swap(rhs);
+	};
+	
+} // namespace ft
 
 #endif /* VECTOR_HPP */

@@ -20,7 +20,7 @@ endif
 #	Includes
 CLASS_PATH = class
 
-CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp)
+CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp) #map.hpp)
 
 #    Files
 SRCS_PATH = srcs

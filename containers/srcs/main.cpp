@@ -1,4 +1,4 @@
-// # include "../class/vector.hpp"
+# include "../class/vector.hpp"
 # include "../class/stack.hpp"
 //# include "../class/map.hpp"
 
