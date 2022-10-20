@@ -20,7 +20,12 @@ endif
 #	Includes
 CLASS_PATH = class
 
-CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp) #map.hpp)
+ITERATOR_PATH = $(CLASS_PATH)/iterators
+
+FUNC_PATH = $(CLASS_PATH)/side_func
+
+CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp) \
+	$(addprefix $(ITERATOR_PATH)/, iterator_traits.hpp reverse_iterator.hpp)
 
 #    Files
 SRCS_PATH = srcs
@@ -53,7 +58,7 @@ $(NAME): $(OBJS_PATH) $(OBJS) $(CLASS)
 $(OBJS_PATH):
 	$(HIDE) mkdir -p $(OBJS_PATH)
 
-$(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp Makefile $(CLASS)
+$(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp $(CLASS)
 	$(HIDE) $(CXX) $(CFLAGS) -c $< -o $@
 	@ echo "$(GREEN)[ OK ]$(END) $(CYAN)${<:.s=.o}$(END)"
 
