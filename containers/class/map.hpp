@@ -45,8 +45,8 @@ namespace ft {
 			
 			
 			/*
-			**
 			**	Value_compare
+			**
 			**	std::map::value_compare is a function object that compares objects of type
 			**	std::map::value_type (key-value pairs) by comparing of the first components of the pairs.
 			*/
