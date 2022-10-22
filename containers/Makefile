@@ -25,7 +25,8 @@ ITERATOR_PATH = $(CLASS_PATH)/iterators
 FUNC_PATH = $(CLASS_PATH)/side_func
 
 CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp) \
-	$(addprefix $(ITERATOR_PATH)/, iterator_traits.hpp reverse_iterator.hpp)
+	$(addprefix $(ITERATOR_PATH)/, iterator_traits.hpp reverse_iterator.hpp) \
+	$(addprefix $(FUNC_PATH)/, enable_if.hpp equal.hpp is_integral.hpp lexicographical_compare.hpp)
 
 #    Files
 SRCS_PATH = srcs

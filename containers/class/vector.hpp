@@ -3,9 +3,12 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-# include <string>
-# include <iostream>
-# include <iomanip>
+# include "iterators/iterator_traits.hpp"
+# include "iterators/reverse_iterator.hpp"
+# include "side_func/enable_if.hpp"
+# include "side_func/equal.hpp"
+# include "side_func/is_integral.hpp"
+# include "side_func/lexicographical_compare.hpp"
 
 namespace ft {
 	
@@ -21,11 +24,11 @@ namespace ft {
 			typedef T											value_type;
 			typedef Allocator									allocator_type;
 			
-			typedef std::iterator_traits<T>						iterator;
-			typedef std::iterator_traits<const T>				const_iterator;
+			typedef ft::iterator_traits<T>						iterator;
+			typedef ft::iterator_traits<const T>				const_iterator;
 			
-			typedef std::reverse_iterator<iterator>				reverse_iterator;
-			typedef std::reverse_iterator<const_iterator>		reverse_const_iterator;
+			typedef ft::reverse_iterator<iterator>				reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>		reverse_const_iterator;
 			
 			typedef typename allocator_type::reference			reference;
 			typedef typename allocator_type::const_reference	const_reference;
@@ -35,6 +38,25 @@ namespace ft {
 			
 			typedef std::size_t									size_type;
 			typedef std::ptrdiff_t								difference_type;
+			
+			
+			
+			/************************************/
+			/*****      MEMBER CLASSES      *****/
+			/************************************/
+			
+			
+			
+			class out_of_range : public std::exception
+			{
+				public:
+					virtual const char* what() const throw() {
+						std::string("vector::_M_range_check: __n ") + \
+						std::string("(which is ") + c_n.str() + \
+						std::string(") >= this->size() (which is ") + \
+						c_size.str() + std::string(")"));
+					};
+			};
 			
 		private:
 
@@ -67,35 +89,30 @@ namespace ft {
 			**		5) Copy constructor. Constructs the container with the copy of the contents of other. 
 			*/
 			
-			vector(): _alloc(), _data(NULL), _size(0), _capacity(0) {
-				// std::cout << "Default constructor called" << std::endl;
+			vector()
+				: _alloc(), _data(NULL), _size(0), _capacity(0) {
 				_data = _alloc.allocate(_capacity);
 				for (size_type i = 0; i < _size; i++)
 					_alloc.construct(_data + i, value_type());
-				// std::cout << "Default constructor finished" << std::endl;
 			};
 			
-			explicit vector( const Allocator& alloc ): _alloc(alloc), _data(NULL), _size(0), _capacity(0) {
-				// std::cout << "Allocator constructor called" << std::endl;
+			explicit vector( const Allocator& alloc )
+				: _alloc(alloc), _data(NULL), _size(0), _capacity(0) {
 				_data = _alloc.allocate(_capacity);
 				for (size_type i = 0; i < _size; i++)
 					_alloc.construct(_data + i, value_type());
-				// std::cout << "Allocator constructor finished" << std::endl;
 			};
 			
-			explicit vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator()):
-			_alloc(alloc), _capacity(count), _size(0) {
-				// std::cout << "Fill constructor called" << std::endl;
+			explicit vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator() )
+				: _alloc(alloc), _capacity(count), _size(0) {
 				_data = _alloc.allocate(_capacity);
 				for (size_type i = 0; i < _capacity; i++)
 					_alloc.construct(_data + i, value);
 				_size = _capacity;
-				// std::cout << "Fill constructor finished" << std::endl;
 			};
 			
 			template< class InputIt >
 			vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() ) {
-				// std::cout << "Range constructor called" << std::endl;
 				_alloc = alloc;
 				_size = 0;
 				_capacity = 0;
@@ -103,18 +120,15 @@ namespace ft {
 				for (InputIt it = first; it != last; it++) {
 					push_back(*it);
 				}
-				// std::cout << "Range constructor finished" << std::endl;
 			};
 			
 			vector( const vector& other ) {
-				// std::cout << "Copy constructor called" << std::endl;
 				_alloc = other._alloc;
 				_size = other._size;
 				_capacity = other._capacity;
 				_data = _alloc.allocate(_capacity);
 				for (size_type i = 0; i < _size; i++)
 					_alloc.construct(_data + i, other._data[i]);
-				// std::cout << "Copy constructor finished" << std::endl;
 			};
 			
 			
@@ -127,11 +141,9 @@ namespace ft {
 			*/
 			
 			~vector() {
-				// std::cout << "Destructor called" << std::endl;
 				for (size_type i = 0; i < _size; i++)
 					_alloc.destroy(_data + i);
 				_alloc.deallocate(_data, _capacity);
-				// std::cout << "Destructor finished" << std::endl;
 			};
 			
 			
@@ -143,7 +155,6 @@ namespace ft {
 			*/
 			
 			vector& operator=( const vector& other ) {
-				// std::cout << "Copy assignment operator called" << std::endl;
 				if (this != &other) {
 					for (size_type i = 0; i < _size; i++)
 						_alloc.destroy(_data + i);
@@ -155,7 +166,6 @@ namespace ft {
 					for (size_type i = 0; i < _size; i++)
 						_alloc.construct(_data + i, other._data[i]);
 				}
-				// std::cout << "Copy assignment operator finished" << std::endl;
 				return *this;
 			};
 			
@@ -173,7 +183,6 @@ namespace ft {
 			*/
 			
 			void assign( size_type count, const T& value ) {
-				// std::cout << "Assign called" << std::endl;
 				for (size_type i = 0; i < _size; i++)
 					_alloc.destroy(_data + i);
 				_alloc.deallocate(_data, _capacity);
@@ -183,12 +192,10 @@ namespace ft {
 				for (size_type i = 0; i < _capacity; i++)
 					_alloc.construct(_data + i, value);
 				_size = _capacity;
-				// std::cout << "Assign finished" << std::endl;
 			};
 			
 			template< class InputIt >
 			void assign( InputIt first, InputIt last ) {
-				// std::cout << "Assign called" << std::endl;
 				for (size_type i = 0; i < _size; i++)
 					_alloc.destroy(_data + i);
 				_alloc.deallocate(_data, _capacity);
@@ -198,7 +205,6 @@ namespace ft {
 				for (InputIt it = first; it != last; it++) {
 					push_back(*it);
 				}
-				// std::cout << "Assign finished" << std::endl;
 			};
 			
 			
