@@ -1,18 +1,44 @@
 #ifndef LIST_HPP
 # define LIST_HPP
 
-#include "Tester.hpp"
+# include <vector>
+# include <deque>
+# include <stack>
+# include <list>
+# include <set>
+# include <map>
+# include <stack>
+# include <queue>
+# include <string>
+# include <iostream>
+# include <iomanip>
+# include <algorithm>
+# include <csignal>
+# include <unistd.h>
+# include <sys/time.h>
+# include <sys/wait.h>
+# include <fstream>
+# include <iterator>
+# include "../../containers/class/iterators/iterator_traits.hpp"
+# include "../../containers/class/iterators/reverse_iterator.hpp"
+# include "../../containers/class/side_func/enable_if.hpp"
+# include "../../containers/class/side_func/equal.hpp"
+# include "../../containers/class/side_func/is_integral.hpp"
+# include "../../containers/class/side_func/lexicographical_compare.hpp"
+# include "../../containers/class/stack.hpp"
+# include "../../containers/class/vector.hpp"
+# include "Tester.hpp"
 
 /****************************/
 /*****      VECTOR      *****/
 /****************************/
 
 // int	vector_launch(); // launch all functions to test vector
-// 
+//
 // int	vector_capacity();
 // int	vector_reserve();
-// 
-// 
+//
+//
 // int	vector_resize();
 
 

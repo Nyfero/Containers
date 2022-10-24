@@ -5,8 +5,9 @@ using namespace MyContainerTester;
 
 int	stack_launch() {
 	std::vector<Tester>	list;
-	
+
 	try {
+		// Initiate all my test
 		Tester a("Stack Constructors", "stack()", &stack_constructor);
 		Tester b("Stack Constructors", "stack = ", &stack_constructor_assign);
 		Tester c("Stack Access", "top()", &stack_top);
@@ -19,7 +20,8 @@ int	stack_launch() {
 		Tester j("Stack Operators", "stack <= ", &stack_operator_einf);
 		Tester k("Stack Operators", "stack > ", &stack_operator_supp);
 		Tester l("Stack Operators", "stack <= ", &stack_operator_esupp);
-		
+
+		// Add all my tests to my test list
 		list.push_back(a);
 		list.push_back(b);
 		list.push_back(c);
@@ -33,11 +35,14 @@ int	stack_launch() {
 		list.push_back(k);
 		list.push_back(l);
 
-		list.at(0).RunTest(list);
 	}
-	catch (const std::exception& e) {
+	catch (const std::exception& e){
+		// Throw an error message if a test's initialization failed
 		std::cout << e.what() << std::endl;
 		return (1);
 	}
+
+	// Run the tests
+	list.at(0).RunTest(list);
 	return (0);
 }

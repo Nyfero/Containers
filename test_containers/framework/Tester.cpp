@@ -1,7 +1,7 @@
 #include "../class/Tester.hpp"
 
 namespace MyContainerTester {
-	
+
 
 //					//
 //	Constructors	//
@@ -60,7 +60,7 @@ std::string Tester::GetNameTest() const {
 }
 
 int	Tester::RunTest(std::vector<Tester> & test) {
-	int	pid = 0;
+	pid_t pid = 0;
 	int	status = 0;
 	std::vector<int>::size_type i = 0;
 	int	res = 0;
@@ -79,7 +79,7 @@ int	Tester::RunTest(std::vector<Tester> & test) {
 		{
 			pid = wait(&status);
 			if (WIFSIGNALED(status))
-				res = Display_error(status); 
+				res = Display_error(status);
 			else // ajouter le diff entre le fichier std et le fichier ft
 				res = Display(status);
 			i++;
@@ -130,7 +130,7 @@ int		Display(int status) {
 bool compareFiles(const std::string& p1, const std::string& p2) {
 	std::ifstream f1(p1, std::ifstream::binary|std::ifstream::ate);
 	std::ifstream f2(p2, std::ifstream::binary|std::ifstream::ate);
-	
+
 	if (f1.fail() || f2.fail())
 	return false; //file problem
 	if (f1.tellg() != f2.tellg())
