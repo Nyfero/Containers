@@ -4,37 +4,40 @@ int	stack_constructor() {
 
 	// Basic types
 	try {
-		ft::stack<bool> a;
-		ft::stack<char> b;
-		ft::stack<wchar_t> c;
-		ft::stack<short> d;
-		ft::stack<int> e;
-		ft::stack<long> f;
-		ft::stack<long long> g;
-		ft::stack<unsigned char> h;
-		ft::stack<unsigned short> i;
-		ft::stack<unsigned int> j;
-		ft::stack<unsigned long long> k;
+		FT::stack<bool> a;
+		FT::stack<char> b;
+		FT::stack<wchar_t> c;
+		FT::stack<short> d;
+		FT::stack<int> e;
+		FT::stack<long> f;
+		FT::stack<long long> g;
+		FT::stack<unsigned char> h;
+		FT::stack<unsigned short> i;
+		FT::stack<unsigned int> j;
+		FT::stack<unsigned long long> k;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Exception: " << e.what() << std::endl;
+		std::cerr << "\e[91mBasic types failed\e[39m" << std::endl;
+		return (1);
 	}
 
 	// Container types
 	try {
-		ft::stack<std::vector<bool>> a;
-		ft::stack<std::deque<bool>> b;
-		ft::stack<std::list<bool>> c;
-		ft::stack<std::set<bool>> d;
-		ft::stack<std::map<std::string, bool>> e;
-		ft::stack<std::multiset<bool>> f;
-		ft::stack<std::multimap<std::string, bool>> g;
-		ft::stack<std::queue<bool>> h;
-		ft::stack<std::priority_queue<bool>> i;
+		FT::stack<std::vector<bool>> a;
+		FT::stack<std::deque<bool>> b;
+		FT::stack<std::list<bool>> c;
+		FT::stack<std::set<bool>> d;
+		FT::stack<std::map<std::string, bool>> e;
+		FT::stack<std::multiset<bool>> f;
+		FT::stack<std::multimap<std::string, bool>> g;
+		FT::stack<std::queue<bool>> h;
+		FT::stack<std::priority_queue<bool>> i;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Exception: " << e.what() << std::endl;
+		std::cerr << "\e[91mContainer types failed\e[39m" << std::endl;
+		return (1);
 	}
 
+	// Stack Constructors succeeded
 	return (0);
 }

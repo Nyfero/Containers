@@ -1,5 +1,7 @@
 #include "../class/Tester.hpp"
 
+#include <stdio.h>
+
 namespace MyContainerTester {
 
 
@@ -67,17 +69,17 @@ int	Tester::RunTest(std::vector<Tester> & test) {
 
 	if (test.empty())
 		throw MissingTestException();
-	while (i < test.size())
-	{
+	while (i < test.size()) {	// While all my test aren't done make them
 		std::cout << test[i] << std::endl;
 		pid = fork();
 		if (pid == -1)
 			throw ChildAbortException();
-		if (pid != 0)
-			test.at(i).ExecTest();
-		else
-		{
-			pid = wait(&status);
+		if (pid != 0) { // In the child
+			int my = test.at(i).ExecTest();
+			exit(my);
+		}
+		else {
+			wait(&status);
 			if (WIFSIGNALED(status))
 				res = Display_error(status);
 			else // ajouter le diff entre le fichier std et le fichier ft
@@ -88,13 +90,13 @@ int	Tester::RunTest(std::vector<Tester> & test) {
 	return (res);
 }
 
-void		Tester::ExecTest() {
+int		Tester::ExecTest() {
 	int	res;
 
 	res = this->_funcPtr();
 	if (res)
-		exit(EXIT_FAILURE);
-	exit(EXIT_SUCCESS);
+		return (1);
+	return (0);
 }
 
 //			//
@@ -117,8 +119,7 @@ int		Display_error(int status) {
 }
 
 int		Display(int status) {
-	if (!status)
-	{
+	if (status == 0) {
 		std::cout << "\e[92m[OK]\e[39m" << std::endl;
 		return (0);
 	}
@@ -127,12 +128,13 @@ int		Display(int status) {
 }
 
 }
+
 bool compareFiles(const std::string& p1, const std::string& p2) {
 	std::ifstream f1(p1, std::ifstream::binary|std::ifstream::ate);
 	std::ifstream f2(p2, std::ifstream::binary|std::ifstream::ate);
 
 	if (f1.fail() || f2.fail())
-	return false; //file problem
+		return false; //file problem
 	if (f1.tellg() != f2.tellg())
 	return false; //size mismatch
 	//seek back to beginning and use std::equal to compare contents

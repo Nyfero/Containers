@@ -1,6 +1,8 @@
 #ifndef LIST_HPP
 # define LIST_HPP
 
+# define FT ft
+
 # include <vector>
 # include <deque>
 # include <stack>
@@ -19,6 +21,7 @@
 # include <sys/wait.h>
 # include <fstream>
 # include <iterator>
+# include "Tester.hpp"
 # include "../../containers/class/iterators/iterator_traits.hpp"
 # include "../../containers/class/iterators/reverse_iterator.hpp"
 # include "../../containers/class/side_func/enable_if.hpp"
@@ -27,7 +30,7 @@
 # include "../../containers/class/side_func/lexicographical_compare.hpp"
 # include "../../containers/class/stack.hpp"
 # include "../../containers/class/vector.hpp"
-# include "Tester.hpp"
+
 
 /****************************/
 /*****      VECTOR      *****/

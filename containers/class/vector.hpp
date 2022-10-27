@@ -237,13 +237,14 @@ namespace ft {
 				return _data[pos];
 			};
 
-			void	range_check(size_type n) {
+		private:
+			void	range_check(size_type pos) {
 				std::ostringstream c_n;
 				std::ostringstream c_size;
 
-				c_n << n;
+				c_n << pos;
 				c_size << _size;
-				if (n >= _size)
+				if (pos >= _size)
 					throw std::out_of_range(
 						std::string("vector::_M_range_check: __n ") + \
 						std::string("(which is ") + c_n.str() + \
@@ -251,7 +252,7 @@ namespace ft {
 						c_size.str() + std::string(")"));
 			}
 
-
+		public:
 			/*
 			**	Operator []
 			**
@@ -369,8 +370,8 @@ namespace ft {
 				return reverse_iterator(_data + _size - 1);
 			};
 
-			reverse_iterator rbegin() const {
-				return reverse_iterator(_data + _size - 1);
+			reverse_const_iterator rbegin() const {
+				return reverse_const_iterator(_data + _size - 1);
 			};
 
 
@@ -386,8 +387,8 @@ namespace ft {
 				return reverse_iterator(_data - 1);
 			};
 
-			reverse_iterator rend() const {
-				return reverse_iterator(_data - 1);
+			reverse_const_iterator rend() const {
+				return reverse_const_iterator(_data - 1);
 			};
 
 

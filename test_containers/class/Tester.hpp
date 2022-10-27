@@ -1,6 +1,7 @@
 #ifndef TESTER_HPP
 # define TESTER_HPP
 
+# include "List.hpp"
 namespace MyContainerTester {
 
 	class Tester
@@ -40,7 +41,7 @@ namespace MyContainerTester {
 			std::string	GetFuncName() const;
 			std::string GetNameTest() const;
 			int			RunTest(std::vector<Tester> & src);
-			void		ExecTest();
+			int			ExecTest();
 	};
 
 	//	Display

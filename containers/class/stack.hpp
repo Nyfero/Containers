@@ -47,9 +47,6 @@ namespace ft {
 				: c( cont ) {
 			};
 			
-			stack( const stack& other )
-				: c ( other ) {
-			};
 			
 			
 			/*
