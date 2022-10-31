@@ -606,6 +606,8 @@ namespace ft {
 			*/
 
 			void pop_back() {
+				if (_size != 0)
+					_alloc.destroy(_data + _size); //remove last element
 				_size--;
 			};
 
@@ -736,13 +738,13 @@ namespace ft {
 	//	Operator<=
 	template< class T, class Alloc >
 	bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
-		return !(rhs < lhs);
+		return !(rhs > lhs);
 	};
 
 	//	Operator>
 	template< class T, class Alloc >
 	bool operator>( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
-		return (rhs < lhs);
+		return (!(rhs < lhs) && (rhs != lhs));
 	};
 
 	//	Operator>=
