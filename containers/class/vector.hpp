@@ -237,22 +237,7 @@ namespace ft {
 				return _data[pos];
 			};
 
-		private:
-			void	range_check(size_type pos) {
-				std::ostringstream c_n;
-				std::ostringstream c_size;
 
-				c_n << pos;
-				c_size << _size;
-				if (pos >= _size)
-					throw std::out_of_range(
-						std::string("vector::_M_range_check: __n ") + \
-						std::string("(which is ") + c_n.str() + \
-						std::string(") >= this->size() (which is ") + \
-						c_size.str() + std::string(")"));
-			}
-
-		public:
 			/*
 			**	Operator []
 			**
@@ -429,7 +414,9 @@ namespace ft {
 			**	i.e. std::distance(begin(), end()) for the largest container.
 			*/
 
-			size_type max_size() const;
+			size_type max_size() const {
+				return _alloc.max_size();
+			};
 
 
 			/*
@@ -482,6 +469,8 @@ namespace ft {
 			*/
 
 			void clear() {
+				for (size_type i = 0; i < _size; i++)
+					_alloc.destroy(_data + i);
 				_size = 0;
 			};
 
@@ -497,17 +486,17 @@ namespace ft {
 			*/
 
 			iterator insert( const_iterator pos, const T& value ) {
-				if (_size == _capacity) {
+				if (_size == _capacity) { //reallocate if necessary
 					_capacity *= 2;
 					_data = _alloc.allocate(_capacity);
 				}
 				_size++;
 				iterator it = iterator(_data + _size - 1);
-				while (it != pos) {
+				while (it != pos) { //move my element to the right
 					*it = *(it - 1);
 					it--;
 				}
-				*it = value;
+				*it = value; //put the element where it should
 				return it;
 			};
 
@@ -518,7 +507,7 @@ namespace ft {
 				}
 				_size += count;
 				iterator it = iterator(_data + _size - 1);
-				while (it != pos) {
+				while (it != pos) { //move my element by compt position to the right
 					*it = *(it - count);
 					it--;
 				}
@@ -568,7 +557,7 @@ namespace ft {
 
 			iterator erase( iterator pos ) {
 				iterator it = pos;
-				while (it != end()) {
+				while (it != end()) { //move my element to the left
 					*it = *(it + 1);
 					it++;
 				}
@@ -667,6 +656,30 @@ namespace ft {
 				_capacity = other._capacity;
 				other._capacity = tmp_capacity;
 			};
+
+
+
+			/****************************************/
+			/*****      PRIVATES FUNCTIONS      *****/
+			/****************************************/
+
+
+
+		private:
+
+			void	range_check(size_type pos) {
+				std::ostringstream c_n;
+				std::ostringstream c_size;
+
+				c_n << pos;
+				c_size << _size;
+				if (pos >= _size)
+					throw std::out_of_range(
+						std::string("vector::_M_range_check: __n ") + \
+						std::string("(which is ") + c_n.str() + \
+						std::string(") >= this->size() (which is ") + \
+						c_size.str() + std::string(")"));
+			}
 	};
 
 	/******************************************/
