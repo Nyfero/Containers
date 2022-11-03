@@ -85,19 +85,13 @@ namespace ft {
 
 			vector()
 				: _alloc(), _data(NULL), _size(0), _capacity(0) {
-				_data = _alloc.allocate(_capacity);
-				for (size_type i = 0; i < _size; i++)
-					_alloc.construct(_data + i, value_type());
 			};
 
-			explicit vector( const Allocator& alloc )
+			explicit vector( const allocator_type& alloc )
 				: _alloc(alloc), _data(NULL), _size(0), _capacity(0) {
-				_data = _alloc.allocate(_capacity);
-				for (size_type i = 0; i < _size; i++)
-					_alloc.construct(_data + i, value_type());
 			};
 
-			explicit vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator() )
+			explicit vector( size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type() )
 				: _alloc(alloc), _capacity(count), _size(0) {
 				_data = _alloc.allocate(_capacity);
 				for (size_type i = 0; i < _capacity; i++)
@@ -106,7 +100,7 @@ namespace ft {
 			};
 
 			template< class InputIt >
-			vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() ) {
+			vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type(), ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
 				_alloc = alloc;
 				_size = 0;
 				_capacity = 0;
