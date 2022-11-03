@@ -83,14 +83,17 @@ namespace ft {
 			**		5) Copy constructor. Constructs the container with the copy of the contents of other.
 			*/
 
+			// 1
 			vector()
 				: _alloc(), _data(NULL), _size(0), _capacity(0) {
 			};
 
+ 			// 2
 			explicit vector( const allocator_type& alloc )
 				: _alloc(alloc), _data(NULL), _size(0), _capacity(0) {
 			};
 
+			// 3
 			explicit vector( size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type() )
 				: _alloc(alloc), _capacity(count), _size(0) {
 				_data = _alloc.allocate(_capacity);
@@ -99,17 +102,20 @@ namespace ft {
 				_size = _capacity;
 			};
 
+			// 4
 			template< class InputIt >
-			vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type(), ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
-				_alloc = alloc;
-				_size = 0;
-				_capacity = 0;
+			vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL )
+				: _alloc(alloc), _capacity(0), _size(0) {
+				size_type count = last - first;
+				_capacity = count;
 				_data = _alloc.allocate(_capacity);
-				for (InputIt it = first; it != last; it++) {
-					push_back(*it);
+				for (size_type i = 0; i < count; i++) {
+					_alloc.construct(_data + i, *(first + i));
 				}
+				_size = _capacity;
 			};
 
+			// 5
 			vector( const vector& other ) {
 				_alloc = other._alloc;
 				_size = other._size;
@@ -129,8 +135,6 @@ namespace ft {
 			*/
 
 			~vector() {
-				for (size_type i = 0; i < _size; i++)
-					_alloc.destroy(_data + i);
 				_alloc.deallocate(_data, _capacity);
 			};
 
@@ -144,8 +148,7 @@ namespace ft {
 
 			vector& operator=( const vector& other ) {
 				if (this != &other) {
-					for (size_type i = 0; i < _size; i++)
-						_alloc.destroy(_data + i);
+					clear();
 					_alloc.deallocate(_data, _capacity);
 					_alloc = other._alloc;
 					_size = other._size;
@@ -170,6 +173,7 @@ namespace ft {
 			**	The past-the-end iterator is also invalidated.
 			*/
 
+			// 1
 			void assign( size_type count, const T& value ) {
 				for (size_type i = 0; i < _size; i++)
 					_alloc.destroy(_data + i);
@@ -182,6 +186,7 @@ namespace ft {
 				_size = _capacity;
 			};
 
+			// 2
 			template< class InputIt >
 			void assign( InputIt first, InputIt last ) {
 				for (size_type i = 0; i < _size; i++)
@@ -549,6 +554,7 @@ namespace ft {
 			**	The iterator first does not need to be dereferenceable if first == last: erasing an empty range is a no-op.
 			*/
 
+			// 1
 			iterator erase( iterator pos ) {
 				iterator it = pos;
 				while (it != end()) { //move my element to the left
@@ -559,6 +565,7 @@ namespace ft {
 				return pos;
 			};
 
+			// 2
 			iterator erase( iterator first, iterator last ) {
 				iterator it = first;
 				while (it != last) {
@@ -574,8 +581,7 @@ namespace ft {
 			**	Push_back
 			**
 			**	Appends the given element value to the end of the container.
-			**		1) The new element is initialized as a copy of value.
-			**		2) value is moved into the new element.
+			**	The new element is initialized as a copy of value.
 			**	If the new size() is greater than capacity() then all iterators
 			**	and references (including the past-the-end iterator) are invalidated.
 			**	Otherwise only the past-the-end iterator is invalidated.
@@ -612,8 +618,7 @@ namespace ft {
 			**	Resizes the container to contain count elements.
 			**	If the current size is greater than count, the container is reduced to its first count elements.
 			**	If the current size is less than count,
-			**		1) additional default-inserted elements are appended
-			**		2) additional copies of value are appended.
+			**	Additional default-inserted elements are appended
 			*/
 
 			void resize( size_type count, T value = T() ) {
@@ -695,7 +700,7 @@ namespace ft {
 	**		 The comparison is performed by a function equivalent to std::lexicographical_compare.
 	*/
 
-	//	Operator==
+	// 1	Operator==
 	template< class T, class Alloc >
 	bool operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
 		if (lhs.size() != rhs.size()) {
@@ -709,13 +714,13 @@ namespace ft {
 		return true;
 	};
 
-	//	Operator!=
+	// 2	Operator!=
 	template< class T, class Alloc >
 	bool operator!=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
 		return !(lhs == rhs);
 	};
 
-	//	Operator<
+	// 3	Operator<
 	template< class T, class Alloc >
 	bool operator<( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
 		if (lhs.size() < rhs.size()) {
@@ -729,19 +734,19 @@ namespace ft {
 		return false;
 	};
 
-	//	Operator<=
+	// 4	Operator<=
 	template< class T, class Alloc >
 	bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
 		return !(rhs > lhs);
 	};
 
-	//	Operator>
+	// 5	Operator>
 	template< class T, class Alloc >
 	bool operator>( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
 		return (!(rhs < lhs) && (rhs != lhs));
 	};
 
-	//	Operator>=
+	// 6	Operator>=
 	template< class T, class Alloc >
 	bool operator>=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {
 		return !(lhs < rhs);
