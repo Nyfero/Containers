@@ -20,13 +20,7 @@ endif
 #	Includes
 CLASS_PATH = class
 
-ITERATOR_PATH = $(CLASS_PATH)/iterators
-
-FUNC_PATH = $(CLASS_PATH)/side_func
-
-CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp) \
-	$(addprefix $(ITERATOR_PATH)/, iterator_traits.hpp reverse_iterator.hpp) \
-	$(addprefix $(FUNC_PATH)/, enable_if.hpp equal.hpp is_integral.hpp lexicographical_compare.hpp)
+CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp iterator_traits.hpp reverse_iterator.hpp enable_if.hpp equal.hpp is_integral.hpp lexicographical_compare.hpp)
 
 #    Files
 SRCS_PATH = srcs
@@ -59,7 +53,7 @@ $(NAME): $(OBJS_PATH) $(OBJS) $(CLASS)
 $(OBJS_PATH):
 	$(HIDE) mkdir -p $(OBJS_PATH)
 
-$(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp $(CLASS)
+$(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp $(CLASS) Makefile
 	$(HIDE) $(CXX) $(CFLAGS) -c $< -o $@
 	@ echo "$(GREEN)[ OK ]$(END) $(CYAN)${<:.s=.o}$(END)"
 
@@ -73,4 +67,5 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: $(NAME) all clean fclean re
+.PHONY: all clean fclean re
+

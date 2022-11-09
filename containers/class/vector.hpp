@@ -3,12 +3,12 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-# include "iterators/iterator_traits.hpp"
-# include "iterators/reverse_iterator.hpp"
-# include "side_func/enable_if.hpp"
-# include "side_func/equal.hpp"
-# include "side_func/is_integral.hpp"
-# include "side_func/lexicographical_compare.hpp"
+# include "iterator_traits.hpp"
+# include "reverse_iterator.hpp"
+# include "enable_if.hpp"
+# include "equal.hpp"
+# include "is_integral.hpp"
+# include "lexicographical_compare.hpp"
 
 # include <iostream>
 # include <sstream>
@@ -95,11 +95,10 @@ namespace ft {
 
 			// 3
 			explicit vector( size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type() )
-				: _alloc(alloc), _capacity(count), _size(0) {
-				_data = _alloc.allocate(_capacity);
-				for (size_type i = 0; i < _capacity; i++)
+				: _alloc(alloc), _capacity(count), _size(count) {
+				_data = _alloc.allocate(count);
+				for (size_type i = 0; i < count; i++)
 					_alloc.construct(_data + i, value);
-				_size = _capacity;
 			};
 
 			// 4
@@ -108,7 +107,7 @@ namespace ft {
 				: _alloc(alloc), _capacity(0), _size(0) {
 				size_type count = last - first;
 				_capacity = count;
-				_data = _alloc.allocate(_capacity);
+				_data = _alloc.allocate(count);
 				for (size_type i = 0; i < count; i++) {
 					_alloc.construct(_data + i, *(first + i));
 				}
@@ -116,10 +115,8 @@ namespace ft {
 			};
 
 			// 5
-			vector( const vector& other ) {
-				_alloc = other._alloc;
-				_size = other._size;
-				_capacity = other._capacity;
+			vector( const vector& other ) 
+				: _alloc(other._alloc), _capacity(other._capacity), _size(other._size) {
 				_data = _alloc.allocate(_capacity);
 				for (size_type i = 0; i < _size; i++)
 					_alloc.construct(_data + i, other._data[i]);
@@ -149,11 +146,9 @@ namespace ft {
 			vector& operator=( const vector& other ) {
 				if (this != &other) {
 					clear();
-					_alloc.deallocate(_data, _capacity);
-					_alloc = other._alloc;
+					if (_capacity < other._size)
+						reserve(other._capacity);
 					_size = other._size;
-					_capacity = other._capacity;
-					_data = _alloc.allocate(_capacity);
 					for (size_type i = 0; i < _size; i++)
 						_alloc.construct(_data + i, other._data[i]);
 				}
@@ -175,29 +170,24 @@ namespace ft {
 
 			// 1
 			void assign( size_type count, const T& value ) {
-				for (size_type i = 0; i < _size; i++)
+				reserve(count);
+				for (size_type i = 0; i < count; i++) {
 					_alloc.destroy(_data + i);
-				_alloc.deallocate(_data, _capacity);
-				_size = 0;
-				_capacity = count;
-				_data = _alloc.allocate(_capacity);
-				for (size_type i = 0; i < _capacity; i++)
 					_alloc.construct(_data + i, value);
-				_size = _capacity;
+				}
+				_size = count;
 			};
 
 			// 2
 			template< class InputIt >
-			void assign( InputIt first, InputIt last ) {
-				for (size_type i = 0; i < _size; i++)
+			void assign( InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
+				size_type count = last - first;
+				reserve(count);
+				for (size_type i = 0; i < count; i++) {
 					_alloc.destroy(_data + i);
-				_alloc.deallocate(_data, _capacity);
-				_size = 0;
-				_capacity = 0;
-				_data = _alloc.allocate(_capacity);
-				for (InputIt it = first; it != last; it++) {
-					push_back(*it);
+					_alloc.construct(_data + i, *(first + i));
 				}
+				_size = _capacity;
 			};
 
 
@@ -432,9 +422,16 @@ namespace ft {
 			*/
 
 			void reserve( size_type new_cap ) {
+				if (new_cap > max_size())
+					throw std::length_error("vector::reserve");
 				if (new_cap > _capacity) {
-					_capacity = new_cap;
-					_data = _alloc.allocate(_capacity);
+					pointer tmp = _alloc.allocate(new_cap);
+					for (size_type i = 0; i < _size; i++) {
+						_alloc.construct(tmp + i, _data[i]);
+						_alloc.destroy(_data + i);
+					}
+					_alloc.deallocate(_data, _capacity);
+					_data = tmp;
 				}
 			};
 
@@ -485,60 +482,38 @@ namespace ft {
 			*/
 
 			iterator insert( const_iterator pos, const T& value ) {
-				if (_size == _capacity) { //reallocate if necessary
-					_capacity *= 2;
-					_data = _alloc.allocate(_capacity);
-				}
+				if (_size + 1 > _capacity)
+					reserve(size_check())
+				shift_right(pos, 1);
+				_alloc.construct(_data + pos, value);
 				_size++;
-				iterator it = iterator(_data + _size - 1);
-				while (it != pos) { //move my element to the right
-					*it = *(it - 1);
-					it--;
-				}
-				*it = value; //put the element where it should
-				return it;
+				return begin();
 			};
 
 			iterator insert( const_iterator pos, size_type count, const T& value ) {
-				if (_size + count > _capacity) {
-					_capacity = _size + count;
-					_data = _alloc.allocate(_capacity);
+				size_type it = pos - begin();
+				if (_size + count > _capacity)
+					reserve(size_check())
+				shift_right(it, count);
+				for (size_type i = 0; i < count; i++) {
+					_alloc.construct(_data + pos + i, value);
+					_size++;
 				}
-				_size += count;
-				iterator it = iterator(_data + _size - 1);
-				while (it != pos) { //move my element by compt position to the right
-					*it = *(it - count);
-					it--;
-				}
-				while (it != pos + count) {
-					*it = value;
-					it++;
-				}
-				return it;
+				return begin();
 			};
 
 			template< class InputIt >
-			iterator insert( const_iterator pos, InputIt first, InputIt last ) {
-				size_type count = 0;
-				for (InputIt it = first; it != last; it++) {
-					count++;
+			iterator insert( const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
+				size_type count = last - first;
+				size_type it = pos - begin();
+				if (_size + count > _capacity)
+					reserve(size_check())
+				shift_right(it, count);
+				for (size_type i = 0; i < count; i++) {
+					_alloc.construct(_data + pos + i, *(first + i));
+					_size++;
 				}
-				if (_size + count > _capacity) {
-					_capacity = _size + count;
-					_data = _alloc.allocate(_capacity);
-				}
-				_size += count;
-				iterator it = iterator(_data + _size - 1);
-				while (it != pos) {
-					*it = *(it - count);
-					it--;
-				}
-				while (it != pos + count) {
-					*it = *first;
-					it++;
-					first++;
-				}
-				return it;
+				return begin();
 			};
 
 
@@ -556,24 +531,22 @@ namespace ft {
 
 			// 1
 			iterator erase( iterator pos ) {
-				iterator it = pos;
-				while (it != end()) { //move my element to the left
-					*it = *(it + 1);
-					it++;
-				}
+				size_type it = pos - begin();
+				_alloc.destroy(_data + pos);
+				shift_left(it, 1);
 				_size--;
-				return pos;
+				return begin();
 			};
 
 			// 2
 			iterator erase( iterator first, iterator last ) {
-				iterator it = first;
-				while (it != last) {
-					*it = *(it + (last - first));
-					it++;
+				size_type count = last - first;
+				for ( size_type i = first - begin(); i < last - begin(); ++i ) {
+					_alloc.destroy(_data + i);
+					_size--
 				}
-				_size -= (last - first);
-				return first;
+				shift_left(pos, count);
+				return begin();
 			};
 
 
@@ -667,8 +640,32 @@ namespace ft {
 
 
 		private:
-
-			void	range_check(size_type pos) {
+			
+			// Return 1 if the vector's size is 0, otherwise double the vector's size
+			size_type	size_check() {
+				if ( _size == 0 )
+					return 1;
+				return _size * 2;
+			}
+			
+			// Shift all my vector elements from pos to the right n times
+			void	shift_right( size_type pos, size_type n ) {
+				for ( size_type i = pos; i < n; i++ ) { // copy after shifting
+					_alloc.construct(_data + i + n, _data[i]);
+					_alloc.destroy(_data + i);
+				}
+			}
+			
+			// Shift all my vector elements from pos to the left n times
+			void	shift_left( size_type pos, size_type n ) {
+				for ( size_type i = pos; i < n; i++ ) { // copy after shifting
+					_alloc.construct(_data + i - n, _data[i]);
+					_alloc.destroy(_data + i);
+				}
+			}
+			
+			// Throw an error if the element is out of range for the vector
+			void	range_check( size_type pos ) {
 				std::ostringstream c_n;
 				std::ostringstream c_size;
 
