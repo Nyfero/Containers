@@ -20,7 +20,7 @@ endif
 #	Includes
 CLASS_PATH = class
 
-CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp iterator_traits.hpp reverse_iterator.hpp enable_if.hpp equal.hpp is_integral.hpp lexicographical_compare.hpp)
+CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp iterator_traits.hpp vector_iterators.hpp reverse_iterator.hpp enable_if.hpp equal.hpp is_integral.hpp lexicographical_compare.hpp)
 
 #    Files
 SRCS_PATH = srcs
@@ -30,7 +30,7 @@ FILES = main.cpp
 SRCS = $(addprefix $(SRCS_PATH)/, $(FILES))
 
 #    Compilation
-NAME = Containers
+NAME = ft_containers
 
 CXX = c++
 
@@ -68,4 +68,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
-

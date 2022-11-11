@@ -97,8 +97,9 @@ namespace ft {
 			explicit vector( size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type() )
 				: _alloc(alloc), _capacity(count), _size(count) {
 				_data = _alloc.allocate(count);
-				for (size_type i = 0; i < count; i++)
+				for (size_type i = 0; i < count; i++) {
 					_alloc.construct(_data + i, value);
+				}
 			};
 
 			// 4
@@ -115,11 +116,12 @@ namespace ft {
 			};
 
 			// 5
-			vector( const vector& other ) 
+			vector( const vector& other )
 				: _alloc(other._alloc), _capacity(other._capacity), _size(other._size) {
 				_data = _alloc.allocate(_capacity);
-				for (size_type i = 0; i < _size; i++)
+				for (size_type i = 0; i < _size; i++) {
 					_alloc.construct(_data + i, other._data[i]);
+				}
 			};
 
 
@@ -146,11 +148,14 @@ namespace ft {
 			vector& operator=( const vector& other ) {
 				if (this != &other) {
 					clear();
-					if (_capacity < other._size)
+					_alloc = other._alloc;
+					if (_capacity < other._size) {
 						reserve(other._capacity);
+					}
 					_size = other._size;
-					for (size_type i = 0; i < _size; i++)
+					for (size_type i = 0; i < _size; i++) {
 						_alloc.construct(_data + i, other._data[i]);
+					}
 				}
 				return *this;
 			};
@@ -422,8 +427,9 @@ namespace ft {
 			*/
 
 			void reserve( size_type new_cap ) {
-				if (new_cap > max_size())
+				if (new_cap > max_size()) {
 					throw std::length_error("vector::reserve");
+				}
 				if (new_cap > _capacity) {
 					pointer tmp = _alloc.allocate(new_cap);
 					for (size_type i = 0; i < _size; i++) {
@@ -465,8 +471,9 @@ namespace ft {
 			*/
 
 			void clear() {
-				for (size_type i = 0; i < _size; i++)
+				for (size_type i = 0; i < _size; i++) {
 					_alloc.destroy(_data + i);
+				}
 				_size = 0;
 			};
 
@@ -482,8 +489,9 @@ namespace ft {
 			*/
 
 			iterator insert( const_iterator pos, const T& value ) {
-				if (_size + 1 > _capacity)
-					reserve(size_check())
+				if (_size + 1 > _capacity) {
+					reserve(size_check());
+				}
 				shift_right(pos, 1);
 				_alloc.construct(_data + pos, value);
 				_size++;
@@ -492,8 +500,9 @@ namespace ft {
 
 			iterator insert( const_iterator pos, size_type count, const T& value ) {
 				size_type it = pos - begin();
-				if (_size + count > _capacity)
-					reserve(size_check())
+				if (_size + count > _capacity) {
+					reserve(size_check());
+				}
 				shift_right(it, count);
 				for (size_type i = 0; i < count; i++) {
 					_alloc.construct(_data + pos + i, value);
@@ -506,8 +515,9 @@ namespace ft {
 			iterator insert( const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
 				size_type count = last - first;
 				size_type it = pos - begin();
-				if (_size + count > _capacity)
-					reserve(size_check())
+				if (_size + count > _capacity) {
+					reserve(size_check());
+				}
 				shift_right(it, count);
 				for (size_type i = 0; i < count; i++) {
 					_alloc.construct(_data + pos + i, *(first + i));
@@ -531,9 +541,8 @@ namespace ft {
 
 			// 1
 			iterator erase( iterator pos ) {
-				size_type it = pos - begin();
 				_alloc.destroy(_data + pos);
-				shift_left(it, 1);
+				shift_left(pos - begin(), 1);
 				_size--;
 				return begin();
 			};
@@ -543,9 +552,9 @@ namespace ft {
 				size_type count = last - first;
 				for ( size_type i = first - begin(); i < last - begin(); ++i ) {
 					_alloc.destroy(_data + i);
-					_size--
 				}
-				shift_left(pos, count);
+				shift_left(first - begin(), count);
+				_size -= count;
 				return begin();
 			};
 
@@ -561,11 +570,10 @@ namespace ft {
 			*/
 
 			void push_back( const T& value ) {
-				if (_size == _capacity) {
-					_capacity *= 2;
-					_data = _alloc.allocate(_capacity);
+				if (_size + 1 > _capacity) {
+					reserve(size_check());
 				}
-				_data[_size] = value;
+				_alloc.construct(_data + _size, value);
 				_size++;
 			};
 
@@ -579,9 +587,10 @@ namespace ft {
 			*/
 
 			void pop_back() {
-				if (_size != 0)
-					_alloc.destroy(_data + _size); //remove last element
-				_size--;
+				if (_size != 0) {
+					_alloc.destroy(_data + _size);
+					_size--;
+				}
 			};
 
 
@@ -596,12 +605,14 @@ namespace ft {
 
 			void resize( size_type count, T value = T() ) {
 				if (count > _size) {
-					if (count > _capacity) {
-						_capacity = count;
-						_data = _alloc.allocate(_capacity);
-					}
+					reserve(count);
 					for (size_type i = _size; i < count; i++) {
-						_data[i] = value;
+						_alloc.construct(_data + i, value);
+					}
+				}
+				else {
+					for (size_type i = count; i < _size; i++) {
+						_alloc.destroy(_data + i);
 					}
 				}
 				_size = count;
@@ -617,18 +628,10 @@ namespace ft {
 			*/
 
 			void swap( vector& other ) {
-				allocator_type tmp_alloc = _alloc;
-				_alloc = other._alloc;
-				other._alloc = tmp_alloc;
-				pointer tmp_data = _data;
-				_data = other._data;
-				other._data = tmp_data;
-				size_type tmp_size = _size;
-				_size = other._size;
-				other._size = tmp_size;
-				size_type tmp_capacity = _capacity;
-				_capacity = other._capacity;
-				other._capacity = tmp_capacity;
+				std::swap( _alloc, other._alloc);
+				std::swap( _data, other._data);
+				std::swap( _size, other._size);
+				std::swap( _capacity, other._capacity);
 			};
 
 
@@ -640,14 +643,14 @@ namespace ft {
 
 
 		private:
-			
+
 			// Return 1 if the vector's size is 0, otherwise double the vector's size
 			size_type	size_check() {
 				if ( _size == 0 )
 					return 1;
 				return _size * 2;
 			}
-			
+
 			// Shift all my vector elements from pos to the right n times
 			void	shift_right( size_type pos, size_type n ) {
 				for ( size_type i = pos; i < n; i++ ) { // copy after shifting
@@ -655,7 +658,7 @@ namespace ft {
 					_alloc.destroy(_data + i);
 				}
 			}
-			
+
 			// Shift all my vector elements from pos to the left n times
 			void	shift_left( size_type pos, size_type n ) {
 				for ( size_type i = pos; i < n; i++ ) { // copy after shifting
@@ -663,7 +666,7 @@ namespace ft {
 					_alloc.destroy(_data + i);
 				}
 			}
-			
+
 			// Throw an error if the element is out of range for the vector
 			void	range_check( size_type pos ) {
 				std::ostringstream c_n;
