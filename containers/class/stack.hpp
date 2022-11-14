@@ -16,11 +16,11 @@ namespace ft {
 			/*****      MEMBER TYPES      *****/
 			/**********************************/
 
-			typedef T									value_type;
-			typedef Container							container_type;
-			typedef size_t								size_type;
+			typedef Container									container_type;
+			typedef typename container_type::value_type			value_type;
+			typedef typename container_type::size_type			size_type;
 
-			typedef typename container_type::reference		reference;
+			typedef typename container_type::reference			reference;
 			typedef typename container_type::const_reference	const_reference;
 
 		protected:
@@ -54,7 +54,7 @@ namespace ft {
 			**	Note, that if the elements are pointers, the pointed-to objects are not destroyed.
 			*/
 
-			~stack() {
+			virtual ~stack() {
 			};
 
 
@@ -69,6 +69,51 @@ namespace ft {
 			stack& operator=( const stack& other ) {
 				c = other.c;
 				return *this;
+			};
+
+
+
+			/*******************************/
+			/*****      Operators      *****/
+			/*******************************/
+			
+			
+			
+			/*
+			**	Operators
+			**
+			**	Compares the contents of the underlying containers of two container adaptors.
+			**	The comparison is done by applying the corresponding operator to the underlying containers.
+			*/
+
+			//	Operator==
+			friend bool operator==( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+				return lhs.c == rhs.c;
+			};
+
+			//	Operator!=
+			friend bool operator!=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+				return lhs.c != rhs.c;
+			};
+
+			//	Operator<
+			friend bool operator<( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+				return lhs.c < rhs.c;
+			};
+
+			//	Operator<=
+			friend bool operator<=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+				return lhs.c <= rhs.c;
+			};
+
+			//	Operator>
+			friend bool operator>( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+				return lhs.c > rhs.c;
+			};
+
+			//	Operator>=
+			friend bool operator>=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
+				return lhs.c >= rhs.c;
 			};
 
 
@@ -153,55 +198,6 @@ namespace ft {
 			void pop() {
 				c.pop_back();
 			};
-	};
-
-	/******************************************/
-	/*****      NON-MEMBER FUNCTIONS      *****/
-	/******************************************/
-
-
-
-	/*
-	**	Operators
-	**
-	**	Compares the contents of the underlying containers of two container adaptors.
-	**	The comparison is done by applying the corresponding operator to the underlying containers.
-	*/
-
-	//	Operator==
-	template< class value_type, class container_type >
-	bool operator==( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
-		return lhs.c == rhs.c;
-	};
-
-	//	Operator!=
-	template< class value_type, class container_type >
-	bool operator!=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
-		return lhs.c != rhs.c;
-	};
-
-	//	Operator<
-	template< class value_type, class container_type >
-	bool operator<( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
-		return lhs.c < rhs.c;
-	};
-
-	//	Operator<=
-	template< class value_type, class container_type >
-	bool operator<=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
-		return lhs.c <= rhs.c;
-	};
-
-	//	Operator>
-	template< class value_type, class container_type >
-	bool operator>( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
-		return lhs.c > rhs.c;
-	};
-
-	//	Operator>=
-	template< class value_type, class container_type >
-	bool operator>=( const ft::stack<value_type, container_type>& lhs, const ft::stack<value_type, container_type>& rhs ) {
-		return lhs.c >= rhs.c;
 	};
 
 }	// namespace ft
