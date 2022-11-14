@@ -88,8 +88,8 @@ namespace ft {
 
 			// 4
 			template< class InputIt >
-			vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL )
-				: _alloc(alloc), _capacity(0), _size(0) {
+			vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type() )
+				: _alloc(alloc) {
 				size_type count = last - first;
 				_capacity = count;
 				_data = _alloc.allocate(count);

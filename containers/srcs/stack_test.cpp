@@ -112,9 +112,51 @@ void stack_test_operators() {
 	Test_success();
 }
 
+void	stack_test_copy() {
+	annonce("Copy");
+	srand(time(NULL));
+	
+	std::stack<int> real;
+	ft::stack<int> mine;
+	
+	for (int i = 0; i < 4; i++) {
+		int k = rand() % 2147483647;
+		if (i % 2)
+			k *= -1;
+		real.push(k);
+		mine.push(k);
+	
+		if (real.top() != mine.top()) {
+			std::cout << "Real stack: " << real.top() << std::endl;
+			std::cout << "Mine stack: " << mine.top() << std::endl;
+			return Test_failure();
+		}
+	}
+	
+	std::stack<int> real2(real);
+	ft::stack<int> mine2(mine);
+	if (real2.top() != mine2.top()) {
+		std::cout << "Real stack: " << real2.top() << std::endl;
+		std::cout << "Mine stack: " << mine2.top() << std::endl;
+		return Test_failure();
+	}
+	
+	std::stack<int> real3 = real;
+	ft::stack<int> mine3 = mine;
+	if (real3.top() != mine3.top()) {
+		std::cout << "Real stack: " << real3.top() << std::endl;
+		std::cout << "Mine stack: " << mine3.top() << std::endl;
+		return Test_failure();
+	}
+	
+	
+	Test_success();
+}
+
 void	launch_stack() {
 	stack_test_push_top();
 	stack_test_size();
 	stack_test_pop_empty();
 	stack_test_operators();
+	stack_test_copy();
 }

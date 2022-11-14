@@ -25,7 +25,7 @@ CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp iterator_traits.hpp vec
 #    Files
 SRCS_PATH = srcs
 
-FILES = main.cpp utils.cpp stack_test.cpp
+FILES = main.cpp utils.cpp stack_test.cpp vector_test.cpp
 
 SRCS = $(addprefix $(SRCS_PATH)/, $(FILES))
 
