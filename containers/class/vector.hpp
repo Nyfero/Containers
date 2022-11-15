@@ -69,12 +69,14 @@ namespace ft {
 
 			// 1
 			vector()
-				: _alloc(), _data(NULL), _size(0), _capacity(0) {
+				: _alloc(Allocator()), _data(NULL), _size(0), _capacity(0) {
+					_data = _alloc.allocate(0);
 			};
 
  			// 2
 			explicit vector( const allocator_type& alloc )
 				: _alloc(alloc), _data(NULL), _size(0), _capacity(0) {
+					_data = _alloc.allocate(0);
 			};
 
 			// 3
@@ -90,13 +92,10 @@ namespace ft {
 			template< class InputIt >
 			vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type() )
 				: _alloc(alloc) {
-				size_type count = last - first;
-				_capacity = count;
-				_data = _alloc.allocate(count);
-				for (size_type i = 0; i < count; i++) {
-					_alloc.construct(_data + i, *(first + i));
-				}
-				_size = _capacity;
+				_data = _alloc.allocate(0);
+				_capacity = 0;
+				_size = 0;
+				assign(first, last);
 			};
 
 			// 5
@@ -120,6 +119,7 @@ namespace ft {
 			*/
 
 			~vector() {
+				clear();
 				_alloc.deallocate(_data, _capacity);
 			};
 
@@ -161,6 +161,7 @@ namespace ft {
 
 			// 1
 			void assign( size_type count, const T& value ) {
+				clear();
 				reserve(count);
 				for (size_type i = 0; i < count; i++) {
 					_alloc.destroy(_data + i);
@@ -172,6 +173,7 @@ namespace ft {
 			// 2
 			template< class InputIt >
 			void assign( InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
+				clear();
 				size_type count = last - first;
 				reserve(count);
 				for (size_type i = 0; i < count; i++) {
@@ -424,6 +426,7 @@ namespace ft {
 					}
 					_alloc.deallocate(_data, _capacity);
 					_data = tmp;
+					_capacity = new_cap;
 				}
 			};
 
@@ -475,23 +478,25 @@ namespace ft {
 			*/
 
 			iterator insert( const_iterator pos, const T& value ) {
+				size_type index = pos - begin();
 				if (_size + 1 > _capacity) {
-					reserve(size_check());
+					reserve(_size + 1);
 				}
-				shift_right(pos, 1);
-				_alloc.construct(_data + pos, value);
+				std::cout << index << std::endl;
+				shift_right(index , 1);
+				_alloc.construct(_data + index, value);
 				_size++;
 				return begin();
 			};
 
 			iterator insert( const_iterator pos, size_type count, const T& value ) {
-				size_type it = pos - begin();
+				size_type index = pos - begin();
 				if (_size + count > _capacity) {
-					reserve(size_check());
+					reserve(_size + count);
 				}
-				shift_right(it, count);
+				shift_right(index, count);
 				for (size_type i = 0; i < count; i++) {
-					_alloc.construct(_data + pos + i, value);
+					_alloc.construct(_data + index + i, value);
 					_size++;
 				}
 				return begin();
@@ -500,13 +505,13 @@ namespace ft {
 			template< class InputIt >
 			iterator insert( const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
 				size_type count = last - first;
-				size_type it = pos - begin();
+				size_type index = pos - begin();
 				if (_size + count > _capacity) {
-					reserve(size_check());
+					reserve(_size + count);
 				}
-				shift_right(it, count);
+				shift_right(index, count);
 				for (size_type i = 0; i < count; i++) {
-					_alloc.construct(_data + pos + i, *(first + i));
+					_alloc.construct(_data + index + i, *(first + i));
 					_size++;
 				}
 				return begin();
@@ -573,10 +578,8 @@ namespace ft {
 			*/
 
 			void pop_back() {
-				if (_size != 0) {
-					_alloc.destroy(_data + _size);
-					_size--;
-				}
+				_alloc.destroy(_data + _size - 1);
+				_size--;
 			};
 
 
@@ -639,9 +642,9 @@ namespace ft {
 
 			// Shift all my vector elements from pos to the right n times
 			void	shift_right( size_type pos, size_type n ) {
-				for ( size_type i = pos; i < n; i++ ) { // copy after shifting
-					_alloc.construct(_data + i + n, _data[i]);
-					_alloc.destroy(_data + i);
+				for ( size_type i = 0; i < n; i++ ) { // copy after shifting
+					_alloc.construct(_data + i + n + pos, _data[pos]);
+					_alloc.destroy(_data + pos);
 				}
 			}
 

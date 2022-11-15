@@ -1,5 +1,9 @@
 #include "../class/utils.hpp"
 
+void	title(std::string str) {
+	std::cout << std::endl << str << std::endl;
+}
+
 void	annonce(std::string msg) {
 	std::cout << msg << std::endl;
 }

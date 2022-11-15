@@ -27,6 +27,7 @@
 # include "vector.hpp"
 // # include "map.hpp"
 
+void	title(std::string str);
 void	annonce(std::string msg);
 void	Test_failure();
 void	Test_success();
