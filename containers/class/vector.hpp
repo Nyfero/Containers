@@ -301,11 +301,11 @@ namespace ft {
 			*/
 
 			iterator begin() {
-				return iterator(_data);
+				return _data;
 			};
 
 			const_iterator begin() const {
-				return const_iterator(_data);
+				return _data;
 			};
 
 
@@ -317,11 +317,11 @@ namespace ft {
 			*/
 
 			iterator end() {
-				return iterator(_data + _size);
+				return _data + _size;
 			};
 
 			const_iterator end() const {
-				return const_iterator(_data + _size);
+				return _data + _size;
 			};
 
 
@@ -334,11 +334,11 @@ namespace ft {
 			*/
 
 			reverse_iterator rbegin() {
-				return reverse_iterator(_data + _size - 1);
+				return reverse_iterator(end());
 			};
 
 			reverse_const_iterator rbegin() const {
-				return reverse_const_iterator(_data + _size - 1);
+				return reverse_const_iterator(end());
 			};
 
 
@@ -351,11 +351,11 @@ namespace ft {
 			*/
 
 			reverse_iterator rend() {
-				return reverse_iterator(_data - 1);
+				return reverse_iterator(begin());
 			};
 
 			reverse_const_iterator rend() const {
-				return reverse_const_iterator(_data - 1);
+				return reverse_const_iterator(begin());
 			};
 
 
@@ -482,39 +482,48 @@ namespace ft {
 				if (_size + 1 > _capacity) {
 					reserve(_size + 1);
 				}
-				std::cout << index << std::endl;
-				shift_right(index , 1);
+				if (index > 0) {
+					shift_right(index , 1);
+				}
 				_alloc.construct(_data + index, value);
 				_size++;
-				return begin();
+				return begin() + index;
 			};
 
-			iterator insert( const_iterator pos, size_type count, const T& value ) {
+			void insert( const_iterator pos, size_type count, const T& value ) {
 				size_type index = pos - begin();
+				if (!count) {
+					return;
+				}
 				if (_size + count > _capacity) {
 					reserve(_size + count);
 				}
-				shift_right(index, count);
+				if (index > 0) {
+					shift_right(index, count);
+				}
 				for (size_type i = 0; i < count; i++) {
 					_alloc.construct(_data + index + i, value);
 					_size++;
 				}
-				return begin();
 			};
 
 			template< class InputIt >
-			iterator insert( const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
+			void insert( const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = NULL ) {
 				size_type count = last - first;
+				if (!count) {
+					return;
+				}
 				size_type index = pos - begin();
 				if (_size + count > _capacity) {
 					reserve(_size + count);
 				}
-				shift_right(index, count);
+				if (index > 0) {
+					shift_right(index, count);
+				}
 				for (size_type i = 0; i < count; i++) {
 					_alloc.construct(_data + index + i, *(first + i));
 					_size++;
 				}
-				return begin();
 			};
 
 
@@ -532,21 +541,28 @@ namespace ft {
 
 			// 1
 			iterator erase( iterator pos ) {
-				_alloc.destroy(_data + pos);
-				shift_left(pos - begin(), 1);
+				size_type index = pos - begin();
+				_alloc.destroy(_data + index);
+				if (index < _size - 1) {
+					shift_left(index, 1);
+				}
 				_size--;
-				return begin();
+				return begin() + index;
 			};
 
 			// 2
 			iterator erase( iterator first, iterator last ) {
 				size_type count = last - first;
-				for ( size_type i = first - begin(); i < last - begin(); ++i ) {
+				size_type index = first - begin();
+				size_type it_last = last - begin();
+				for ( size_type i = index; i < it_last; ++i ) {
 					_alloc.destroy(_data + i);
 				}
-				shift_left(first - begin(), count);
+				if (index < _size - count) {
+					shift_left(index, count);
+				}
 				_size -= count;
-				return begin();
+				return begin() + index;
 			};
 
 
@@ -642,17 +658,19 @@ namespace ft {
 
 			// Shift all my vector elements from pos to the right n times
 			void	shift_right( size_type pos, size_type n ) {
-				for ( size_type i = 0; i < n; i++ ) { // copy after shifting
-					_alloc.construct(_data + i + n + pos, _data[pos]);
-					_alloc.destroy(_data + pos);
-				}
+				for (size_type i = _size - 1; i >= pos; i--) {
+				_alloc.construct(_data + i + n, _data[i]);
+				_alloc.destroy(_data + i);
+				if (i == 0)
+					break;
+			}
 			}
 
 			// Shift all my vector elements from pos to the left n times
 			void	shift_left( size_type pos, size_type n ) {
-				for ( size_type i = pos; i < n; i++ ) { // copy after shifting
-					_alloc.construct(_data + i - n, _data[i]);
-					_alloc.destroy(_data + i);
+				for (; pos < _size && pos + n < _capacity; pos++) {
+				_alloc.construct(_data + pos, _data[pos + n]);
+				_alloc.destroy(_data + pos + n);
 				}
 			}
 

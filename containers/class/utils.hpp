@@ -35,5 +35,6 @@ void	Test_success();
 void	launch_stack();
 
 void	launch_vector();
+void	launch_vector_iterators();
 
 #endif /* UTILS_HPP */
