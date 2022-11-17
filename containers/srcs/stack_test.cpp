@@ -2,20 +2,25 @@
 
 void	stack_test_push_top() {
 	title("\e[95m-Push Top-\e[39m");
-	srand(time(NULL));
 	
 	std::stack<int> real;
 	ft::stack<int> mine;
+	long time = get_time();
 	
 	annonce("Push 50 elements");
 	for (int i = 0; i < 50; i++) {
-		int k = rand() % 2147483647;
-		if (i % 2)
-			k *= -1;
-		real.push(k);
-		mine.push(k);
+		real.push(i);
 	}
-	Test_success();
+	long real_time = get_time() - time;
+	time = get_time();
+	for (int i = 0; i < 50; i++) {
+		mine.push(i);
+	}
+	long mine_time = get_time() - time;
+	if (mine_time <= real_time * 20)
+		Test_success();
+	else
+		Test_timeout();
 
 	annonce("Top");
 	if (real.top() != mine.top()) {
@@ -38,7 +43,7 @@ void	stack_test_size() {
 	for (int i = 0; i < k; i++) {
 		real.push(1);
 		mine.push(1);
-		if (real.size() != mine.size()) {
+		if (real.size() != mine.size() || real.top() != mine.top()) {
 			std::cout << "Real stack: " << real.size() << std::endl;
 			std::cout << "Mine stack: " << mine.size() << std::endl;
 			return Test_failure();
@@ -149,7 +154,7 @@ void	stack_test_copy() {
 		real.push(k);
 		mine.push(k);
 	
-		if (real.top() != mine.top()) {
+		if (real.size() != mine.size() || real.top() != mine.top()) {
 			std::cout << "Real stack: " << real.top() << std::endl;
 			std::cout << "Mine stack: " << mine.top() << std::endl;
 			return Test_failure();
@@ -157,24 +162,42 @@ void	stack_test_copy() {
 	}
 	
 	annonce("Copy constructor");
+
+	long time = get_time();
 	std::stack<int> real2(real);
+	long real_time = get_time() - time;
+	time = get_time();
 	ft::stack<int> mine2(mine);
-	if (real2.top() != mine2.top()) {
+	long mine_time = get_time() - time;
+
+	if (real2.size() != mine2.size() ||  real2.top() != mine2.top()) {
 		std::cout << "Real stack: " << real2.top() << std::endl;
 		std::cout << "Mine stack: " << mine2.top() << std::endl;
 		return Test_failure();
 	}
-	Test_success();
+	if (mine_time <= real_time * 20)
+		Test_success();
+	else
+		Test_timeout();
 	
 	annonce("Operator =");
+
+	time = get_time();
 	std::stack<int> real3 = real;
+	real_time = get_time() - time;
+	time = get_time();
 	ft::stack<int> mine3 = mine;
+	mine_time = get_time() - time;
+
 	if (real3.top() != mine3.top()) {
 		std::cout << "Real stack: " << real3.top() << std::endl;
 		std::cout << "Mine stack: " << mine3.top() << std::endl;
 		return Test_failure();
 	}
-	Test_success();
+	if (mine_time <= real_time * 20)
+		Test_success();
+	else
+		Test_timeout();
 }
 
 void	launch_stack() {

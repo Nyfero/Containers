@@ -3,8 +3,7 @@
 #ifndef ITERATOR_TRAITS_HPP
 # define ITERATOR_TRAITS_HPP
 
-# include <cstddef>
-# include <memory>
+# include "utils.hpp"
 
 /*
 **	Iterator traits

@@ -3,9 +3,7 @@
 #ifndef MAP_HPP
 # define MAP_HPP
 
-# include <string>
-# include <iostream>
-# include <iomanip>
+# include "utils.hpp"
 
 namespace ft {
 	
@@ -33,8 +31,8 @@ namespace ft {
 			
 			typedef value_type								iterator;
 			typedef const value_type						const_iterator;
-			typedef std::reverse_iterator<iterator>			reverse_iterator;
-			typedef std::reverse_iterator<const_iterator>	const_reverse_iterator;
+			typedef ft::reverse_iterator<iterator>			reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 		
 		public:
 			

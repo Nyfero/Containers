@@ -3,8 +3,7 @@
 #ifndef LEXICOGRAPHICAL_COMPARE_HPP
 # define LEXICOGRAPHICAL_COMPARE_HPP
 
-# include "iterator_traits.hpp"
-# include "enable_if.hpp"
+# include "utils.hpp"
 
 /*
 **	Lexicographical_compare

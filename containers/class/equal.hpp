@@ -3,8 +3,7 @@
 #ifndef EQUAL_HPP 
 # define EQUAL_HPP 
 
-# include "iterator_traits.hpp" 
-# include "enable_if.hpp" 
+# include "utils.hpp"
 
 /*
 **	Equal

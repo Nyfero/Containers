@@ -2,12 +2,10 @@
 
 int main() {
 	title("\e[96m*** STACK ***\e[39m");
-	launch_stack();
+	// launch_stack();
 	
 	title("\e[96m*** VECTOR ***\e[39m");
-	title("\e[93m Functions: \e[39m");
 	launch_vector();
-	title("\e[93m Iterators: \e[39m");
 	launch_vector_iterators();
 	
 	title("\e[96m*** MAP ***\e[39m");

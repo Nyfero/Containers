@@ -8,6 +8,9 @@
 # include <deque>
 # include <stdlib.h>
 # include <sstream>
+# include <sys/time.h>
+# include <unistd.h>
+# include <cstddef>
 
 # include "iterator_traits.hpp"
 # include "reverse_iterator.hpp"
@@ -30,7 +33,10 @@
 void	title(std::string str);
 void	annonce(std::string msg);
 void	Test_failure();
+void	Test_performance(long real_time, long mine_time);
 void	Test_success();
+void	Test_timeout();
+long	get_time();
 
 void	launch_stack();
 
