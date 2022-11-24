@@ -2,6 +2,5 @@
 *.out
 *.a
 .vscode
-Containers
-test.cpp
+ft_containers
 containers-louis

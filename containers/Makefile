@@ -20,7 +20,9 @@ endif
 #	Includes
 CLASS_PATH = class
 
-CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp iterator_traits.hpp vector_iterators.hpp reverse_iterator.hpp enable_if.hpp equal.hpp is_integral.hpp lexicographical_compare.hpp utils.hpp)
+CLASS = $(addprefix $(CLASS_PATH)/, stack.hpp vector.hpp iterator_traits.hpp vector_iterators.hpp \
+	reverse_iterator.hpp enable_if.hpp equal.hpp is_integral.hpp lexicographical_compare.hpp \
+	utils.hpp)
 
 #    Files
 SRCS_PATH = srcs
