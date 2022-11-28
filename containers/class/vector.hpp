@@ -22,8 +22,8 @@ namespace ft {
 			typedef T*											iterator;
 			typedef const T*									const_iterator;
 
-			typedef ft::reverse_iterator<iterator>				reverse_iterator;
-			typedef ft::reverse_iterator<const_iterator>		reverse_const_iterator;
+			typedef ft::reverse_iterators<iterator>				reverse_iterator;
+			typedef ft::reverse_iterators<const_iterator>		reverse_const_iterator;
 
 			typedef typename allocator_type::reference			reference;
 			typedef typename allocator_type::const_reference	const_reference;

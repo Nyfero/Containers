@@ -39,7 +39,3 @@ long	get_time() {
 	time = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 	return (time);
 }
-
-int     int_max(int a, int b) {
-	return (a > b ? a : b);
-}
