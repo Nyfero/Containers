@@ -8,44 +8,51 @@
 
 namespace ft {
 
-	template <typename T>
-	struct node {
-	        T       *data;
-	        node    *left;
-	        node    *right;
-	        node    *parent;
-	        int     height;
+	template<typename T>
+	struct node
+	{
+		T				*_data;
+		node		*_left;
+		node		*_right;
+		node		*_parent;
+		node		*_end;
+		int			_height;
 	};
 
 	template <typename Key, typename T, typename Compare = std::less<Key>, typename Allocator = std::allocator<ft::pair<const Key, T> > >
 	class map
 	{
-		public:
 
 			/**********************************/
 			/*****      MEMBER TYPES      *****/
 			/**********************************/
 
-			typedef Key										key_type;
-			typedef T										mapped_type;
-			typedef typename ft::pair<const Key, T>					value_type;
+		public:
 
-			typedef std::size_t								size_type;
-			typedef std::ptrdiff_t							difference_type;
+			typedef Key																													key_type;
+			typedef T																														mapped_type;
+			typedef typename ft::pair<const Key, T>															value_type;
 
-			typedef Compare									key_compare;
-			typedef Allocator								allocator_type;
+			typedef std::size_t																									size_type;
+			typedef std::ptrdiff_t																							difference_type;
 
-			typedef value_type &							reference;
-			typedef const value_type &						const_reference;
+			typedef Compare																											key_compare;
+			typedef Allocator																										allocator_type;
+			typedef value_type&																									reference;
+			typedef const value_type&																						const_reference;
 
-			typedef typename Allocator::pointer				pointer;
-			typedef typename Allocator::const_pointer		const_pointer;
+			typedef typename allocator_type::pointer														pointer;
+			typedef typename allocator_type::const_pointer											const_pointer;
+			typedef map_iterators<Compare, node<value_type>, value_type>				iterator;
+			typedef map_iterators<Compare, node<value_type>, const value_type>	const_iterator;
+			typedef ft::reverse_iterators<iterator>															reverse_iterator;
+			typedef ft::reverse_iterators<const_iterator>												const_reverse_iterator;
 
-			typedef map_iterators<Compare, node<value_type>, value_type>								iterator;
-			typedef map_iterators<Compare, node<value_type>, const value_type>						const_iterator;
-			typedef ft::reverse_iterators<iterator>			reverse_iterator;
-			typedef ft::reverse_iterators<const_iterator>	const_reverse_iterator;
+		protected:
+
+			typedef node<value_type>																						tnode;
+			typedef typename allocator_type::template rebind<tnode>::other				node_alloc;
+
 
 		public:
 
@@ -78,8 +85,9 @@ namespace ft {
 			/*****      MEMBER ATTRIBUTES      *****/
 			/***************************************/
 
-			node <T>				*_root;
-			node <T>				*_end;
+			node_alloc			_allocNode;
+			tnode						*_root;
+			tnode						*_end;
 			allocator_type	_alloc;
 			size_type				_size;
 			Compare					_comp;
@@ -97,33 +105,28 @@ namespace ft {
 			**
 			**	Constructs new container from a variety of data sources and optionally
 			**	using user supplied allocator alloc or comparison function object comp.
-			**		1-2) Constructs an empty container.
-			**		3) Constructs the container with the contents of the range [first, last).
+			**		1) Constructs an empty container.
+			**		2) Constructs the container with the contents of the range [first, last).
 			**		 If multiple elements in the range have keys that compare equivalent,
 			**		 it is unspecified which element is inserted (pending LWG2844).
-			**		4) Copy constructor. Constructs the container with the copy of the contents of other.
+			**		3) Copy constructor. Constructs the container with the copy of the contents of other.
 			*/
 
-			map()
-				: _root(NULL), _end(NULL), _alloc(Allocator()), _size(0), _comp(Compare()) {
-					initializeend();
-			};
-
 			explicit map( const Compare& comp = Compare(), const Allocator& alloc = Allocator() )
-				: _root(NULL), _end(NULL), _alloc(alloc), _size(0), _comp(comp) {
-					initializeend();
+				: _allocNode(node_alloc()), _root(NULL), _end(NULL), _alloc(alloc), _size(0), _comp(comp) {
+					initialize_end();
 			};
 
 			template< class InputIt >
 			map( InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator() )
-				: _root(NULL), _end(NULL), _alloc(alloc), _size(0), _comp(comp) {
-				initializeend();
+				: _allocNode(node_alloc()), _root(NULL), _end(NULL), _alloc(alloc), _size(0), _comp(comp) {
+				initialize_end();
 				insert(first, last);
 			};
 
 			map( const map& other )
-				: _root(NULL), _end(NULL), _alloc(other._alloc), _size(0), _comp(other._comp) {
-				initializeend();
+				: _allocNode(other._allocNode), _root(NULL), _end(NULL), _alloc(other._alloc), _size(0), _comp(other._comp) {
+				initialize_end();
 				insert(other.begin(), other.end());
 			};
 
@@ -137,8 +140,9 @@ namespace ft {
 
 			~map() {
 				clear();
-				delete _root;
-				delete _end;
+				_alloc.deallocate(_end->_data, 1);
+				_allocNode.deallocate(_end, 1);
+				_allocNode.destroy(_end);
 			};
 
 
@@ -151,6 +155,8 @@ namespace ft {
 
 			map& operator=( const map& other ) {
 				clear();
+				_allocNode = other._allocNode;
+				_alloc = other._alloc;
 				_comp = other._comp;
 				insert(other.begin(), other.end());
 				return *this;
@@ -235,16 +241,14 @@ namespace ft {
 			*/
 
 			iterator begin() {
-				if (!_size) {
+				if (_size == 0)
 					return iterator(_end);
-				}
 				return iterator(node_value_min(_root));
 			};
 
 			const_iterator begin() const {
-				if (!_size) {
+				if (_size == 0)
 					return const_iterator(_end);
-				}
 				return const_iterator(node_value_min(_root));
 			};
 
@@ -337,7 +341,7 @@ namespace ft {
 			*/
 
 			size_type	max_size() const {
-				return _alloc.max_size();
+				return _allocNode.max_size();
 			};
 
 
@@ -380,33 +384,33 @@ namespace ft {
 			*/
 
 			pair<iterator, bool> insert( const value_type& value ) {
-				size_type tmp = _size;
+				size_type temp = _size;
 
 				_root = insert_node(_root, value, NULL);
-				if (!_end->parent) {
-					_end->parent = _root;
-					_end->left = _root;
+				if (_end->_parent == NULL) {
+					_end->_parent = _root;
+					_end->_left = _root;
 				}
 				else {
-					node <T> *new_max = node_value_max(_root);
-					if (_comp(_end->parent->data->first, new_max->data->first)) {
-						_end->parent = new_max;
-						_end->left = new_max;
+					tnode *new_max = node_value_max(_root);
+					if (_comp(_end->_parent->_data->first, new_max->_data->first)) {
+						_end->_parent = new_max;
+						_end->_left = new_max;
 					}
 				}
-				return pair<iterator, bool>(find(value.first), tmp != size());
-			};
-
-			iterator insert( iterator hint, const value_type& value ) {
-				(void) hint;
-				insert(value);
-				return find(value.first);
+				return pair<iterator, bool>(find(value.first), temp != size());
 			};
 
 			template< class InputIt >
 			void insert( InputIt first, InputIt last ) {
 				for (; first != last; ++first)
 					insert(*first);
+			};
+
+			iterator	insert( iterator hint, const value_type& value ) {
+				(void)hint;
+				insert(value);
+				return find(value.first);
 			};
 
 
@@ -423,10 +427,10 @@ namespace ft {
 			**	Thus the end() iterator (which is valid, but is not dereferenceable) cannot be used as a value for pos.
 			*/
 
-			iterator erase( iterator pos ) {
+			void erase( iterator pos ) {
 				_root = deleteNode(_root, *pos.getNode()->data);
 				if (_root) {
-					node <T> *new_max = node_value_max(_root);
+					tnode *new_max = node_value_max(_root);
 					_end->parent = new_max;
 					_end->left = new_max;
 				}
@@ -436,12 +440,14 @@ namespace ft {
 				}
 			};
 
-			iterator erase( iterator first, iterator last ) {
+			void erase( iterator first, iterator last ) {
 				map tmp(first, last);
-				iterator it = tmp.begin() - 1;
-				iterator ite = tmp.end() - 1;
-				for (; it != ite;it++) {
+				iterator it = tmp.begin();
+				iterator ite = tmp.end();
+				ite--;
+				for (; it != ite;) {
 					erase(it);
+					it++;
 				}
 				erase(it);
 				if (!_size) {
@@ -470,17 +476,20 @@ namespace ft {
 			*/
 
 			void swap( map& other ) {
-				node <T>				*tmp_root = _root;
-				node <T>				*tmp_end = _end;
+				node_alloc			tmp_allocNode = _allocNode;
+				tnode						*tmp_root = _root;
+				tnode						*tmp_end = _end;
 				allocator_type	tmp_alloc = _alloc;
 				size_type				tmp_size = _size;
 				Compare					tmp_comp = _comp;
 
+				_allocNode = other._allocNode;
 				_root = other._root;
 				_end = other._end;
 				_alloc = other._alloc;
 				_size = other._size;
 				_comp = other._comp;
+				other._allocNode = tmp_allocNode;
 				other._root = tmp_root;
 				other._end = tmp_end;
 				other._alloc = tmp_alloc;
@@ -516,25 +525,11 @@ namespace ft {
 			*/
 
 			iterator find( const Key& key ) {
-				iterator it = begin();
-				while (it != end()) {
-					if (it->first == key) {
-						return it;
-					}
-					++it;
-				}
-				return it;
+				return (find_in_tree(_root, key));
 			};
 
 			const_iterator find( const Key& key ) const {
-				const_iterator it = begin();
-				while (it != end()) {
-					if (it->first == key) {
-						return it;
-					}
-					++it;
-				}
-				return it;
+				return (find_in_tree(_root, key));
 			};
 
 
@@ -566,7 +561,7 @@ namespace ft {
 			iterator lower_bound( const Key& key ) {
 				iterator it = begin();
 				while (it != end()) {
-					if (!_comp(it->first,key)) {
+					if (it->first >= key) {
 						return it;
 					}
 					++it;
@@ -577,7 +572,7 @@ namespace ft {
 			const_iterator lower_bound( const Key& key ) const {
 				const_iterator it = begin();
 				while (it != end()) {
-					if (!_comp(it->first,key)) {
+					if (it->first >= key) {
 						return it;
 					}
 					++it;
@@ -645,293 +640,302 @@ namespace ft {
 
 
 
-	/******************************/
-	/*****      AVL TREE      *****/
-	/******************************/
+			/*************************/
+			/*****      AVL      *****/
+			/*************************/
 
+		private:
 
+			int	max( int a, int b ) {
+				return (a > b) ? a : b;
+			};
 
-	int	max( int a, int b ) {
-		return (a > b) ? a : b;
-	};
+			int height( tnode *N ) {
+				if (N == NULL) {
+					return 0;
+				}
+				return N->_height;
+			};
 
-	node <T>	*new_node( const value_type& value, node <T> *parent ) {
-		node <T> *nd = new node<T>;
-		nd->left = NULL;
-		nd->right = NULL;
-		nd->parent = parent;
-		nd->height = 1;
-		nd->data = _alloc.allocate(1);
-		_alloc.construct(nd->data, value);
-		return (nd);
-	};
+			void destroy_tree( tnode *N ) {
+				if (N != NULL) {
+					destroy_tree(N->_left);
+					destroy_tree(N->_right);
+					_size--;
+					if (_size == 0) {
+						_end->_parent = NULL;
+						_end->_left = NULL;
+					}
+					free_node(N);
+				}
+				_root = NULL;
+			};
 
-	int height( node <T> *nd ) {
-		if (!nd) {
-			return 0;
-		}
-		return nd->height;
-	};
+			iterator find_in_tree( tnode *N, const Key& key ) {
+				if (N == NULL) {
+					return end();
+				}
+				if (N->_data->first == key) {
+					return iterator(N);
+				}
+				else if (_comp(key, N->_data->first)) {
+					return find_in_tree(N->_left, key);
+				}
+				else {
+					return find_in_tree(N->_right, key);
+				}
+			};
 
-	void destroy_tree( node <T> *nd ) {
-		if (nd) {
-			destroy_tree(nd->left);
-			destroy_tree(nd->right);
-			free_node(nd);
-		}
-	};
+			const_iterator find_in_tree( tnode *N, const Key& key ) const {
+				if (N == NULL) {
+					return end();
+				}
+				if (N->_data->first == key) {
+					return iterator(N);
+				}
+				else if (_comp(key, N->_data->first)) {
+					return find_in_tree(N->_left, key);
+				}
+				else {
+					return find_in_tree(N->_right, key);
+				}
+			};
 
-	void	free_node( node <T> *nd ) {
-		if (nd->data) {
-			_alloc.destroy(nd->data);
-			_alloc.deallocate(nd->data, 1);
-			nd->data = NULL;
-		}
-		nd->left = NULL;
-		nd->right = NULL;
-		nd->parent = NULL;
-		nd->height = 0;
-		free(nd);
-		nd = NULL;
-	};
+			tnode	*new_node( const value_type& value, tnode *parent ) {
+				tnode *N = _allocNode.allocate(1);
+				_allocNode.construct(N, tnode());
+				N->_left = NULL;
+				N->_right = NULL;
+				N->_parent = parent;
+				N->_end = _end;
+				N->_height = 1;
+				N->_data = _alloc.allocate(1);
+				_alloc.construct(N->_data, value);
+				return (N);
+			};
 
-	iterator find_in_tree( node <T> *nd, const Key& key ) {
-		if (!nd) {
-			return end();
-		}
-		if (nd->data->first == key) {
-			return iterator(nd);
-		}
-		else if (_comp(key, nd->data->first)) {
-			return find_in_tree(nd->left, key);
-		}
-		else {
-			return find_in_tree(nd->right, key);
-		}
-	};
+			void	free_node( tnode *N ) {
+				if (N->_data) {
+					_alloc.deallocate(N->_data, 1);
+					N->_data = NULL;
+				}
+				_allocNode.deallocate(N, 1);
+				_allocNode.destroy(N);
+				N = NULL;
+			};
 
-	const_iterator find_in_tree( node <T> *nd, const Key& key ) const {
-		if (!nd) {
-			return end();
-		}
-		if (nd->data->first == key) {
-			return iterator(nd);
-		}
-		else if (_comp(key, nd->data->first)) {
-			return find_in_tree(nd->left, key);
-		}
-		else {
-			return find_in_tree(nd->right, key);
-		}
-	};
+			tnode *rightRotate( tnode *y ) {
+				tnode *x = y->_left;
+				tnode *B = x->_right;
 
-	node <T>	*rightRotate( node <T> *y ) {
-		node <T>	*x = y->left;
-		node <T>	*xr = x->right;
+				x->_parent = y->_parent;
+				y->_parent = x;
+				x->_right = y;
+				y->_left = B;
+				if (B) {
+					B->_parent = y;
+				}
+				y->_height = max(height(y->_left), height(y->_right)) + 1;
+				x->_height = max(height(x->_left), height(x->_right)) + 1;
+				return x;
+			};
 
-		x->parent = y->parent;
-		y->parent = x;
-		x->right = y;
-		y->left = xr;
-		if (xr) {
-			xr->parent = y;
-		}
-		y->height = max(height(y->left), height(y->right)) + 1;
-		x->height = max(height(x->left), height(x->right)) + 1;
-		return x;
-	};
+			tnode *leftRotate( tnode *x ) {
+				tnode *y = x->_right;
+				tnode *B = y->_left;
 
-	node <T>	*leftRotate( node <T> *x ) {
-		node <T>	*y = x->right;
-		node <T>	*yl = y->left;
+				y->_parent = x->_parent;
+				x->_parent = y;
+				y->_left = x;
+				x->_right = B;
+				if (B) {
+					B->_parent = x;
+				}
+				x->_height = max(height(x->_left), height(x->_right)) + 1;
+				y->_height = max(height(y->_left), height(y->_right)) + 1;
+				return y;
+			};
 
-		y->parent = x->parent;
-		x->parent = y;
-		y->left = x;
-		x->right = yl;
-		if (yl) {
-			yl->parent = x;
-		}
-		x->height = max(height(x->left), height(x->right)) + 1;
-		y->height = max(height(y->left), height(y->right)) + 1;
-		return y;
-	};
+			int getBalanceFactor( tnode *N ) {
+				if (N == NULL) {
+					return 0;
+				}
+				return height(N->_left) - height(N->_right);
+			};
 
-	int getBalanceFactor(node <T> *nd ) {
-		if (!nd) {
-			return 0;
-		}
-		return height(nd->left) - height(nd->right);
-	};
-
-	/* Insert a node in a recursive way
-	/ 1- Find the correct position and Insert new node
-	/ 2- Check the balance and rotate if necessary
-	*/
-	node <T>	*insert_node( node <T> *root, const value_type value, node <T> *parent ) {
-		if (root == NULL) {
-			_size++;
-			return new_node(value, parent);
-		}
-		if (_comp(value.first, root->data->first)) {
-			root->left = insert_node(root->left, value, root);
-		}
-		else if (!(_comp(value.first, root->data->first))) {
-			if (value.first == root->data->first) {
+			/* Insert a node in a recursive way
+			/ 1- Find the correct position and Insert new node
+			/ 2- Check the balance and rotate if necessary
+			*/
+			tnode *insert_node( tnode *root, const value_type value, tnode *parent ) {
+				if (root == NULL) {
+					_size++;
+					return (new_node(value, parent));
+				}
+				if (_comp(value.first, root->_data->first)) {
+					root->_left = insert_node(root->_left, value, root);
+				}
+				else if (!(_comp(value.first, root->_data->first))) {
+					if (value.first == root->_data->first) {
+						return root;
+					}
+					root->_right = insert_node(root->_right, value, root);
+				}
+				else {
+					return root;
+				}
+				root->_height = 1 + max(height(root->_left), height(root->_right));
+				int balanceFactor = getBalanceFactor(root);
+				if (balanceFactor > 1) {
+					if (_comp(value.first, root->_left->_data->first)) {
+						return rightRotate(root);
+					}
+					else if (!(_comp(value.first, root->_left->_data->first))) {
+						root->_left = leftRotate(root->_left);
+						return rightRotate(root);
+					}
+				}
+				if (balanceFactor < -1) {
+					if (!(_comp(value.first, root->_right->_data->first))) {
+						return leftRotate(root);
+					}
+					else if (_comp(value.first, root->_right->_data->first)) {
+						root->_right = rightRotate(root->_right);
+						return leftRotate(root);
+					}
+				}
 				return root;
-			}
-			root->right = insert_node(root->right, value, root);
-		}
-		else {
-			return root;
-		}
-		root->height = 1 + max(height(root->left), height(root->right));
+			};
 
-		int balanceFactor = getBalanceFactor(root);
-		if (balanceFactor > 1) {
-			if (_comp(value.first, root->left->data->first)) {
-				return rightRotate(root);
-			}
-			else if (!(_comp(value.first, root->left->data->first))) {
-				root->left = leftRotate(root->left);
-				return rightRotate(root);
-			}
-		}
-		if (balanceFactor < -1) {
-			if (!(_comp(value.first, root->right->data->first))) {
-				return leftRotate(root);
-			}
-			else if (_comp(value.first, root->right->data->first)) {
-				root->right = rightRotate(root->right);
-				return leftRotate(root);
-			}
-		}
-		return root;
-	};
+			tnode *node_value_min( tnode *N ) const {
+				tnode *temp = N;
+				while (temp->_left != NULL) {
+					temp = temp->_left;
+				}
+				return temp;
+			};
 
-	node <T> *node_value_min( node <T> *nd ) const {
-		node <T> *tmp = nd;
-		while (tmp->left != NULL)
-			tmp = tmp->left;
-		return tmp;
-	};
+			tnode *node_value_max( tnode *N ) const {
+				tnode *temp = N;
+				while (temp->_right != NULL) {
+					temp = temp->_right;
+				}
+				return temp;
+			};
 
-	node <T> *node_value_max( node <T> *nd ) const {
-		node <T> *tmp = nd;
-		while (tmp->right != NULL)
-			tmp = tmp->right;
-		return tmp;
-	};
-
-	node <T> *deleteNode( node <T> *root, const value_type value ) {
-		if (!root) {
-			return root;
-		}
-		if (_comp(value.first, root->data->first)) {
-			root->left = deleteNode(root->left, value);
-		}
-		else if (!(_comp(value.first, root->data->first)) && value.first != root->data->first) {
-			root->right = deleteNode(root->right, value);
-		}
-		else {
-			if (!root->left || !root->right) {
-				node <T> *tmp = root->left ? root->left : root->right;
-				if (!tmp) {
-					tmp = root;
-					root = NULL;
+			tnode *deleteNode( tnode *root, const value_type value ) {
+				if (root == NULL) {
+					return root;
+				}
+				if (_comp(value.first, root->_data->first)) {
+					root->_left = deleteNode(root->_left, value);
+				}
+				else if (!(_comp(value.first, root->_data->first)) && value.first != root->_data->first) {
+					root->_right = deleteNode(root->_right, value);
 				}
 				else {
-					node <T> swap;
-					swap.data = root->data;
-					root->data = tmp->data;
-					root->left = tmp->left;
-					root->right = tmp->right;
-					tmp->data = swap.data;
+					if ((root->_left == NULL) || (root->_right == NULL)) {
+						tnode *temp = root->_left ? root->_left : root->_right;
+						if (temp == NULL) {
+							temp = root;
+							root = NULL;
+						}
+						else {
+							tnode swap;
+							swap._data = root->_data;
+							root->_data = temp->_data;
+							root->_left = temp->_left;
+							root->_right = temp->_right;
+							temp->_data = swap._data;
+						}
+						_size--;
+						free_node(temp);
+					}
+					else {
+						tnode swap;
+						swap._data = root->_data;
+						tnode *temp = node_value_min(root->_right);
+						if (temp->_data->first == root->_right->_data->first) {
+							root->_right = root->_right->_right;
+						}
+						else {
+							temp->_parent->_left = NULL;
+						}
+						root->_data = temp->_data;
+						temp->_data = swap._data;
+						if (temp->_right) {
+							temp->_right->_parent = root;
+						}
+						_size--;
+						free_node(temp);
+					}
 				}
-				_size--;
-				free_node(tmp);
-			}
-			else {
-				node <T> swap;
-				swap.data = root->data;
-				node <T> *tmp = node_value_min(root->right);
-				if (tmp->data->first == root->right->data->first) {
-					root->right = root->right->right;
+				if (root == NULL) {
+					return root;
+				}
+				root->_height = 1 + max(height(root->_left), height(root->_right));
+				int balanceFactor = getBalanceFactor(root);
+				if (balanceFactor > 1) {
+					if (getBalanceFactor(root->_left) >= 0) {
+						return rightRotate(root);
+					}
+					else {
+						root->_left = leftRotate(root->_left);
+						return rightRotate(root);
+					}
+				}
+				if (balanceFactor < -1)	{
+					if (getBalanceFactor(root->_right) <= 0) {
+						return leftRotate(root);
+					}
+					else {
+						root->_right = rightRotate(root->_right);
+						return leftRotate(root);
+					}
+				}
+				return root;
+			};
+
+			void	initialize_end() {
+				_end = new_node(value_type(key_type(), mapped_type()), NULL);
+			};
+
+			// Print the tree
+			void printTree( tnode *root, std::string indent, bool last ) {
+				if (root != NULL) {
+					std::cout << indent;
+					if (last) {
+						std::cout << "R----";
+						indent += "   ";
+					}
+					else {
+						std::cout << "L----";
+						indent += "|  ";
+					}
+					std::cout << root->_data->first << std::endl;
+					printInfoNode(root);
+					printTree(root->_left, indent, false);
+					printTree(root->_right, indent, true);
+				}
+			};
+
+			void printInfoNode( tnode *N ) {
+				std::cout << "NODE " << N->_data->first;
+				//  std::cout << "NODE " << N->_data->first << " HEIGHT LEFT = " << height(N->_left) << " HEIGHT RIGHT = " << height(N->_right) << " HEIGHT = " << height(N->_left) - height(N->_right);
+				if (N->_left) {
+					std::cout<< " Value N->_left "<< N->_left->_data->first;
+				}
+				if (N->_right) {
+					std::cout<< " Value N->_right "<< N->_right->_data->first;
+				}
+				if (N->_parent) {
+					std::cout << " DAD = " << N->_parent->_data->first;
 				}
 				else {
-					tmp->parent->left = NULL;
+					std::cout << " DAD = NULL ";
 				}
-				root->data = tmp->data;
-				tmp->data = swap.data;
-				if (tmp->right) {
-					tmp->right->parent = root;
-				}
-				_size--;
-				free_node(tmp);
-			}
-		}
-		if (!root) {
-			return root;
-		}
-		root->height = 1 + max(height(root->left), height(root->right));
-		int balanceFactor = getBalanceFactor(root);
-		if (balanceFactor > 1) {
-			if (getBalanceFactor(root->left) >= 0) {
-				return rightRotate(root);
-			}
-			else {
-				root->left = leftRotate(root->left);
-				return rightRotate(root);
-			}
-		}
-		if (balanceFactor < -1) {
-			if (getBalanceFactor(root->right) <= 0) {
-				return leftRotate(root);
-			}
-			else {
-				root->right = rightRotate(root->right);
-				return leftRotate(root);
-			}
-		}
-		return root;
-	};
-
-	void	initializeend() {
-		_end = new_node(value_type(key_type(), mapped_type()), NULL);
-	};
-
-	// Print the tree
-	void printTree( node <T> *root, std::string indent, bool last ) {
-		if (root != NULL) {
-			std::cout << indent;
-			if (last) {
-				std::cout << "R----";
-				indent += "   ";
-			}
-			else {
-				std::cout << "L----";
-				indent += "|  ";
-			}
-			std::cout << root->data->first << std::endl;
-			printInfoNode(root);
-			printTree(root->left, indent, false);
-			printTree(root->right, indent, true);
-		}
-	};
-
-	void printInfoNode( node <T> *nd ) {
-		std::cout << "NODE " << nd->data->first;
-		//  std::cout << "NODE " << nd->data->first << " HEIGHT LEFT = " << height(nd->left) << " HEIGHT RIGHT = " << height(nd->right) << " HEIGHT = " << height(nd->left) - height(nd->right);
-		if (nd->left)
-			std::cout<< " Value nd->left "<< nd->left->data->first;
-		if (nd->right)
-			std::cout<< " Value nd->right "<< nd->right->data->first;
-		if (nd->parent)
-			std::cout << " DAD = " << nd->parent->data->first;
-		else
-			std::cout << " DAD = NULL ";
-		std::cout<< std::endl;
-	};
+				std::cout<< std::endl;
+			};
 
 	};
 
