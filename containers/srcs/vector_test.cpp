@@ -48,7 +48,7 @@ void	vector_test_constructors() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-	
+
 	annonce("Copy constructor");
 
 	time = get_time();
@@ -62,7 +62,7 @@ void	vector_test_constructors() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-	
+
 	annonce("Operator =");
 
 	time = get_time();
@@ -76,12 +76,12 @@ void	vector_test_constructors() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void vector_test_assign() {
 	title("\e[95m-Assign-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
 
@@ -108,7 +108,7 @@ void vector_test_assign() {
 	time = get_time();
 	real.assign(1000000,i);
 	real_time = get_time() - time;
-	
+
 	time = get_time();
 	mine.assign(1000000,i);
 	mine_time = get_time() - time;
@@ -118,10 +118,10 @@ void vector_test_assign() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-	
+
 	std::vector<int>	real2;
 	ft::vector<int>		mine2;
-	
+
 	annonce("Assign range");
 
 	time = get_time();
@@ -137,15 +137,15 @@ void vector_test_assign() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void	vector_test_at() {
 	title("\e[95m-At-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	for (int i = 0; i < 10; i++) {
 		real.push_back(i);
 		mine.push_back(i);
@@ -155,7 +155,7 @@ void	vector_test_at() {
 		std::cout << "Mine vector: " << mine.size() << std::endl;
 		return Test_failure();
 	}
-	
+
 	annonce("At in range");
 	try {
 		for (int k = 0; k < 3; k++) {
@@ -172,7 +172,7 @@ void	vector_test_at() {
 		return Test_failure();
 	}
 	Test_success();
-	
+
 	annonce("At negative");
 	try {
 		int must_fail = mine.at(-1);
@@ -194,15 +194,15 @@ void	vector_test_at() {
 		;
 	}
 	Test_success();
-}
+};
 
 void	vector_test_brackets() {
 	title("\e[95m-Brackets []-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	for (int i = 0; i < 10; i++) {
 		real.push_back(i);
 		mine.push_back(i);
@@ -212,7 +212,7 @@ void	vector_test_brackets() {
 		std::cout << "Mine vector: " << mine.size() << std::endl;
 		return Test_failure();
 	}
-	
+
 	annonce("Brackets in range");
 	for (int k = 0; k < 3; k++) {
 		int i = rand() % 10;
@@ -223,7 +223,7 @@ void	vector_test_brackets() {
 		}
 	}
 	Test_success();
-	
+
 	// Portable programs should never call this function with an argument n that is out of range, since this causes undefined behavior
 
 	// annonce("Brackets negative");
@@ -233,7 +233,7 @@ void	vector_test_brackets() {
 	// 	return Test_failure();
 	// }
 	// Test_success();
-	
+
 	// annonce("Brackets out of range");
 	// if (real[10] != mine[10]) {
 	// 	std::cout << "Real vector: " << real[10] << std::endl;
@@ -241,16 +241,16 @@ void	vector_test_brackets() {
 	// 	return Test_failure();
 	// }
 	// Test_success();
-}
+};
 
 void	vector_test_front() {
 	title("\e[95m-Front-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
 	int n = rand() % 2147483647;
-	
+
 	annonce("Front with one element");
 	real.push_back(n);
 	mine.push_back(n);
@@ -260,7 +260,7 @@ void	vector_test_front() {
 		return Test_failure();
 	}
 	Test_success();
-	
+
 	annonce("Front with 11 elements");
 	for (int i = 0; i < 10; i++) {
 		n = rand() % 2147483647;
@@ -273,16 +273,16 @@ void	vector_test_front() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_test_back() {
 	title("\e[95m-Back-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
 	int n = rand() % 2147483647;
-	
+
 	annonce("Back with one element");
 	real.push_back(n);
 	mine.push_back(n);
@@ -292,7 +292,7 @@ void	vector_test_back() {
 		return Test_failure();
 	}
 	Test_success();
-	
+
 	annonce("Back with 11 elements");
 	for (int i = 0; i < 10; i++) {
 		n = rand() % 2147483647;
@@ -305,16 +305,16 @@ void	vector_test_back() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_test_data() {
 	title("\e[95m-Data-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
 	int n = rand() % 2147483647;
-	
+
 	annonce("Data with one element");
 	real.push_back(n);
 	mine.push_back(n);
@@ -324,7 +324,7 @@ void	vector_test_data() {
 		return Test_failure();
 	}
 	Test_success();
-	
+
 	annonce("Data with 11 elements");
 	for (int i = 0; i < 10; i++) {
 		n = rand() % 2147483647;
@@ -337,7 +337,7 @@ void	vector_test_data() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_test_empty() {
 	title("\e[95m-Empty-\e[39m");
@@ -362,15 +362,15 @@ void	vector_test_empty() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_test_size() {
 	title("\e[95m-Size-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Size with no element");
 	if (real.size() != mine.size()) {
 		std::cout << "Real vector: " << real.size() << std::endl;
@@ -378,7 +378,7 @@ void	vector_test_size() {
 		return Test_failure();
 	}
 	Test_success();
-	
+
 	annonce("Size with one element");
 	real.push_back(1);
 	mine.push_back(1);
@@ -388,7 +388,7 @@ void	vector_test_size() {
 		return Test_failure();
 	}
 	Test_success();
-	
+
 	annonce("Size beetwen 1 and 1000");
 	int n = (rand() % 1000) + 1;
 	for (int i = 0; i < n; i++) {
@@ -401,15 +401,15 @@ void	vector_test_size() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_test_max_size() {
 	title("\e[95m-Max_size-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Max_size");
 	if (real.max_size() != mine.max_size()) {
 		std::cout << "Real vector: " << real.max_size() << std::endl;
@@ -417,15 +417,15 @@ void	vector_test_max_size() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_test_reserve() {
 	title("\e[95m-Reserve-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Reserve with 0");
 
 	long time = get_time();
@@ -441,7 +441,7 @@ void	vector_test_reserve() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-	
+
 	annonce("Reserve with 1");
 
 	time = get_time();
@@ -457,7 +457,7 @@ void	vector_test_reserve() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-	
+
 	annonce("Reserve with 1000");
 
 	time = get_time();
@@ -475,7 +475,7 @@ void	vector_test_reserve() {
 	Test_performance(real_time, mine_time);
 
 	annonce("Reserve with 1000000");
-	
+
 	time = get_time();
 	real.reserve(1000000);
 	real_time = get_time() - time;
@@ -489,15 +489,15 @@ void	vector_test_reserve() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void	vector_test_capacity() {
 	title("\e[95m-Capacity-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Capacity with 0");
 	if (real.capacity() != mine.capacity()) {
 		std::cout << "Real vector: " << real.capacity() << std::endl;
@@ -505,7 +505,7 @@ void	vector_test_capacity() {
 		return Test_failure();
 	}
 	Test_success();
-	
+
 	annonce("Capacity with 1");
 	real.push_back(1);
 	mine.push_back(1);
@@ -515,7 +515,7 @@ void	vector_test_capacity() {
 		return Test_failure();
 	}
 	Test_success();
-	
+
 	annonce("Capacity with 1000");
 	for (int i = 0; i < 1000; i++) {
 		real.push_back(1);
@@ -527,15 +527,15 @@ void	vector_test_capacity() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_test_clear() {
 	title("\e[95m-Clear-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Clear with 0");
 
 	long time = get_time();
@@ -551,9 +551,9 @@ void	vector_test_clear() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-	
+
 	annonce("Clear with 1");
-	
+
 	real.push_back(1);
 	mine.push_back(1);
 
@@ -570,7 +570,7 @@ void	vector_test_clear() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-	
+
 	annonce("Clear with 1000");
 	for (int i = 0; i < 1000; i++) {
 		real.push_back(1);
@@ -590,15 +590,15 @@ void	vector_test_clear() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void	vector_test_insert() {
 	title("\e[95m-Insert-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Insert 2 element at begin");
 
 	long time = get_time();
@@ -697,19 +697,19 @@ void	vector_test_insert() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void	vector_test_erase() {
 	title("\e[95m-Erase-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Erase 1 element from the begin");
 	real.push_back(1);
 	mine.push_back(1);
-	
+
 	long time = get_time();
 	real.erase(real.begin());
 	long real_time = get_time() - time;
@@ -775,15 +775,15 @@ void	vector_test_erase() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void	vector_test_push_back() {
 	title("\e[95m-Push_back-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Push 1 element");
 
 	long time = get_time();
@@ -819,15 +819,15 @@ void	vector_test_push_back() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void	vector_test_pop_back() {
 	title("\e[95m-Pop_back-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Pop 1 element");
 	real.push_back(1);
 	mine.push_back(1);
@@ -869,15 +869,15 @@ void	vector_test_pop_back() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void	vector_test_resize() {
 	title("\e[95m-Resize-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Resize from 0 to 1 element");
 
 	long time = get_time();
@@ -925,15 +925,15 @@ void	vector_test_resize() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void	vector_test_swap() {
 	title("\e[95m-Swap-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Swap 1 element");
 	real.push_back(1);
 	mine.push_back(1);
@@ -971,7 +971,7 @@ void	vector_test_swap() {
 		return Test_failure();
 	}
 	Test_performance(real_time, mine_time);
-}
+};
 
 void launch_vector() {
 	title("\e[93m Functions: \e[39m");
@@ -994,7 +994,7 @@ void launch_vector() {
 	vector_test_pop_back();
 	vector_test_resize();
 	vector_test_swap();
-}
+};
 
 
 
@@ -1007,10 +1007,10 @@ void launch_vector() {
 void	vector_iterators_test_begin() {
 	title("\e[95m-Begin-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Begin 1 element");
 	real.push_back(1);
 	mine.push_back(1);
@@ -1032,15 +1032,15 @@ void	vector_iterators_test_begin() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_iterators_test_end() {
 	title("\e[95m-End-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("End 1 element");
 	real.push_back(1);
 	mine.push_back(1);
@@ -1062,15 +1062,15 @@ void	vector_iterators_test_end() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_iterators_test_rbegin() {
 	title("\e[95m-Rbegin-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Rbegin 1 element");
 	real.push_back(1);
 	mine.push_back(1);
@@ -1092,15 +1092,15 @@ void	vector_iterators_test_rbegin() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void	vector_iterators_test_rend() {
 	title("\e[95m-Rend-\e[39m");
 	srand(time(NULL));
-	
+
 	std::vector<int>	real;
 	ft::vector<int>		mine;
-	
+
 	annonce("Rend 1 element");
 	real.push_back(1);
 	mine.push_back(1);
@@ -1122,7 +1122,7 @@ void	vector_iterators_test_rend() {
 		return Test_failure();
 	}
 	Test_success();
-}
+};
 
 void 	launch_vector_iterators() {
 	title("\e[93m Iterators: \e[39m");
@@ -1130,4 +1130,4 @@ void 	launch_vector_iterators() {
 	vector_iterators_test_end();
 	vector_iterators_test_rbegin();
 	vector_iterators_test_rend();
-}
+};

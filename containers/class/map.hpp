@@ -190,16 +190,16 @@ namespace ft {
 
 			T& at( const Key& key ) {
 				iterator it = find(key);
-				if (it == end())
-					throw std::out_of_range("Key not found");
-				return it->second;
+				if (it != end() && it->first == key)
+					return it->second;
+				throw std::out_of_range("Key not found");
 			};
 
 			const T& at( const Key& key ) const {
 				const_iterator it = find(key);
-				if (it == end())
-					throw std::out_of_range("Key not found");
-				return it->second;
+				if (it != end() && it->first == key)
+					return it->second;
+				throw std::out_of_range("Key not found");
 			};
 
 			/*
@@ -341,7 +341,7 @@ namespace ft {
 			*/
 
 			size_type	max_size() const {
-				return _allocNode.max_size();
+				return _alloc.max_size();
 			};
 
 
